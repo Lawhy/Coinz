@@ -10,14 +10,15 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton3"
-        android:layout_width="112dp"
-        android:layout_height="111dp"
+        android:layout_width="114dp"
+        android:layout_height="113dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:clickable="true"
-        app:backgroundTint="@android:color/holo_green_light"
+        android:src="@drawable/coin"
+        app:backgroundTint="@android:color/holo_orange_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,10 +35,9 @@
         android:layout_marginTop="8dp"
         android:elevation="7dp"
         android:text="@string/app_name"
-        android:textAppearance="@style/TextAppearance.AppCompat"
-        android:textSize="35sp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
 
-        android:textColor="@android:color/holo_green_dark"
+        android:textColor="?android:attr/colorFocusedHighlight"
         app:layout_constraintBottom_toBottomOf="@+id/floatingActionButton3"
         app:layout_constraintEnd_toEndOf="@+id/floatingActionButton3"
         app:layout_constraintStart_toStartOf="@+id/floatingActionButton3"
@@ -58,7 +58,7 @@
         app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.313"
+        app:layout_constraintVertical_bias="0.307"
         app:srcCompat="@drawable/money1" />
 
 </android.support.constraint.ConstraintLayout>
