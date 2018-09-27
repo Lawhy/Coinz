@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Coinz</string>
+    <string name="background">money</string>
 </resources>

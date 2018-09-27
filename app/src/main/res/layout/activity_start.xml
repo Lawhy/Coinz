@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/ic_launcher_background"
     tools:context=".StartActivity">
 
 
@@ -19,10 +20,9 @@
         app:backgroundTint="@android:color/holo_green_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.369" />
+        app:layout_constraintVertical_bias="0.432" />
 
     <TextView
         android:id="@+id/textView2"
@@ -43,4 +43,22 @@
         app:layout_constraintStart_toStartOf="@+id/floatingActionButton3"
         app:layout_constraintTop_toTopOf="@+id/floatingActionButton3"
         tools:text="@string/app_name" />
+
+    <ImageView
+        android:id="@+id/imageView3"
+        android:layout_width="254dp"
+        android:layout_height="418dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.313"
+        app:srcCompat="@drawable/money1" />
+
 </android.support.constraint.ConstraintLayout>
