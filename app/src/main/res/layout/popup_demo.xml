@@ -2,14 +2,14 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/relativeLayout"
+    android:id="@+id/login_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#13000000"
-    android:gravity="center"
-    android:orientation="vertical"
+    android:background="@drawable/main"
     android:clickable="true"
     android:focusableInTouchMode="true"
+    android:gravity="center"
+    android:orientation="vertical"
     android:padding="10dp">
 
     <RadioButton
@@ -18,7 +18,7 @@
         android:layout_height="54dp"
         android:layout_marginStart="4dp"
         android:elevation="7dp"
-        android:text="Close"
+        android:text="@string/login_page_close"
         android:textSize="12sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,6 +30,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="164dp"
+        app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="@dimen/activity_horizontal_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -38,7 +39,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/customBlack1">
+            android:background="@color/trans_white">
 
             <EditText
                 android:id="@+id/emailText"
@@ -61,7 +62,8 @@
         android:layout_height="50dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="236dp"
+        android:layout_marginTop="244dp"
+        app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="@dimen/activity_horizontal_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +72,7 @@
         <RelativeLayout
             android:layout_width="290dp"
             android:layout_height="match_parent"
-            android:background="@color/customBlack1">
+            android:background="@color/trans_white">
 
             <EditText
                 android:id="@+id/passwordText"
@@ -91,11 +93,11 @@
         android:layout_height="37dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="360dp"
+        android:layout_marginTop="368dp"
         android:alpha="0.7"
         android:background="@drawable/button_shape2"
         android:text="@string/action_sign_in_short"
-        android:textColor="@color/sixtyBlack"
+        android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintStart_toStartOf="parent"
@@ -106,14 +108,14 @@
         android:layout_width="156dp"
         android:layout_height="30dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="312dp"
-        android:buttonTint="@color/thirtyBlack"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="316dp"
+        android:buttonTint="@color/customBlack1"
         android:text="@string/check_box_one"
-        android:textColor="@color/sixtyBlack"
+        android:textColor="@color/colorPrimary"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.011"
+        app:layout_constraintHorizontal_bias="0.042"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -123,23 +125,23 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="404dp"
+        android:layout_marginTop="412dp"
         android:background="@android:color/transparent"
         android:text="@string/action_sign_up_short"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/uoeLogo"
-        android:layout_width="280dp"
-        android:layout_height="65dp"
+        android:layout_width="157dp"
+        android:layout_height="41dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="8dp"
         android:contentDescription="@string/logo"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.957"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/uoelogo" />

@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mainWindow"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/main"
@@ -10,8 +11,8 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton_login"
-        android:layout_width="114dp"
-        android:layout_height="113dp"
+        android:layout_width="121dp"
+        android:layout_height="118dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"

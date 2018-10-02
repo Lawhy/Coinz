@@ -1,35 +1,25 @@
 package com.lawhy.coinz
 
-
-import android.Manifest
-import android.app.Activity
-import android.content.pm.PackageManager
-import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Context
-import android.support.design.widget.Snackbar
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
-import android.widget.Button
-import android.widget.EditText
 import android.widget.PopupWindow
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_start.*
 import kotlinx.android.synthetic.main.popup_demo.view.*
-
+import android.view.WindowManager
 
 class StartActivity : AppCompatActivity() {
-
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
 
+        // Popup Login Page
         val popupWindow = PopupWindow(this)
         floatingActionButton_login.setOnClickListener {
             popupLogin(popupWindow)
@@ -47,11 +37,15 @@ class StartActivity : AppCompatActivity() {
         }
 
         popupWindow.contentView = popupView
-        popupWindow.width = ViewGroup.LayoutParams.MATCH_PARENT
+                popupWindow.width = ViewGroup.LayoutParams.WRAP_CONTENT
         popupWindow.height = ViewGroup.LayoutParams.WRAP_CONTENT
 
         //show
         popupWindow.showAtLocation(popupView,Gravity.CENTER,0, 0)
+
+        // popupWindow.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
+        //dim the background
+        dimBehind(popupWindow)
 
         popupWindow.isFocusable = true
         popupWindow.update()
@@ -75,14 +69,16 @@ class StartActivity : AppCompatActivity() {
         }
     }
 
-//    // function to hide keyboard
-//    fun hideKeyboard() {
-//        try {
-//            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-//            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
-//        } catch (e: Exception) {
-//            // TODO: handle exception
-//        }
-//    }
+    private fun dimBehind(popupWindow: PopupWindow) {
+        val container = popupWindow.contentView.rootView
+        val context = popupWindow.contentView.context
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val p = container.layoutParams as WindowManager.LayoutParams
+        p.flags = p.flags or WindowManager.LayoutParams.FLAG_DIM_BEHIND
+        p.dimAmount = 0.4f
+        wm.updateViewLayout(container, p)
+    }
+
+
 
 }
