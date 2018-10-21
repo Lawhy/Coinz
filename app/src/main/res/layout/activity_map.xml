@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
         mapbox:mapbox_cameraTargetLat="55.944"
         mapbox:mapbox_cameraTargetLng="-3.188396"
-        mapbox:mapbox_cameraZoom="15"
+        mapbox:mapbox_cameraZoom="13"
         mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets"
         />
 
