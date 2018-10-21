@@ -3,6 +3,7 @@ package com.lawhy.coinz
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -85,7 +86,6 @@ class StartActivity : AppCompatActivity() {
         //show
         popupWindow.showAtLocation(popupView,Gravity.CENTER,0, 0)
 
-        // popupWindow.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
         //dim the background
         dimBehind(popupWindow)
 
@@ -96,6 +96,9 @@ class StartActivity : AppCompatActivity() {
         popupView.inBtn.setOnClickListener { _ ->
             val emailString = popupView.emailText.getText().toString().trim()
             val passwordString = popupView.passwordText.getText().toString().trim()
+
+            //testing
+            toMapbox()
 
             when {
                 emailString.isEmpty() or passwordString.isEmpty() -> {
@@ -109,6 +112,11 @@ class StartActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    fun toMapbox() {
+        val intent = Intent(this, MapActivity::class.java)
+        startActivity(intent)
     }
 
     private fun dimBehind(popupWindow: PopupWindow) {

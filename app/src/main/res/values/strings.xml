@@ -21,4 +21,8 @@
     <string name="check_box_one">Remember me</string>
     <string name="logo">uoeLogo</string>
     <string name="login_page_close">Close</string>
+    
+    // mapbox token
+    <string name="access_token">pk.eyJ1IjoibGF3aHkiLCJhIjoiY2puaTFtamk1MDRjYjNwczVsaDM3NzZ2byJ9.b0VaSeVWY14Ip6VIxk77CA</string>
+
 </resources>
