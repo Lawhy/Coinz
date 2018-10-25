@@ -9,6 +9,6 @@ object DownloadCompleteRunner : DownloadCompleteListener {
     var result : String? = null
     override fun downloadComplete(result: String) {
         this.result = result
-        Log.i("DownloadTask", "Completed $result!")
+        Log.i("DownloadTask Completed", "$result!")
     }
 }

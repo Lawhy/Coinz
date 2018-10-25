@@ -22,7 +22,20 @@
     <string name="logo">uoeLogo</string>
     <string name="login_page_close">Close</string>
     
-    // mapbox token
+    <!--mapbox token-->
     <string name="access_token">pk.eyJ1IjoibGF3aHkiLCJhIjoiY2puaTFtamk1MDRjYjNwczVsaDM3NzZ2byJ9.b0VaSeVWY14Ip6VIxk77CA</string>
+
+    <!--mapview strings-->
+    <string name="collect_button">COLLECT</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="five">5</string>
+    <string name="six">6</string>
+    <string name="seven">7</string>
+    <string name="eight">8</string>
+    <string name="nine">9</string>
+    <string name="zero">0</string>
 
 </resources>

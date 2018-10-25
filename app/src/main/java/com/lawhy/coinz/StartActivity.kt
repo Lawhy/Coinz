@@ -49,12 +49,17 @@ class StartActivity : AppCompatActivity() {
         Log.d(tag, "[onStart] Recalled lastDownloadDate is '$downloadDate'" )
 
         // Download today's JSON map
-        var current = LocalDateTime.now()
+        val current = LocalDateTime.now()
         val formatter =  DateTimeFormatter.ofPattern("yyyy/MM/dd")
         val current_date = current.format(formatter)
         Log.i("CurrentDate", "$current_date")
-        DownloadFileTask(DownloadCompleteRunner).execute("http://homepages.inf.ed.ac.uk/stg/coinz/$current_date/coinzmap.geojson")
-        downloadDate = current_date
+        // Download happens only when the last download date is not today
+        if (downloadDate != current_date) {
+            DownloadFileTask(DownloadCompleteRunner, this).execute("http://homepages.inf.ed.ac.uk/stg/coinz/$current_date/coinzmap.geojson")
+            downloadDate = current_date
+        } else {
+            Log.i("Map_Today:", "Has been downloaded before!")
+        }
     }
 
     override fun onStop() {
