@@ -75,7 +75,9 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\icon_makrer.png" />
+                                      <entry key="iconShape" value="NONE" />
+                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\hand.png" />
+                                      <entry key="outputName" value="ic_hand" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -96,7 +98,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputIconType" value="ACTIONBAR" />
+                            <entry key="outputIconType" value="LAUNCHER_LEGACY" />
                           </map>
                         </option>
                       </PersistentState>
