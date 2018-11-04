@@ -4,4 +4,4 @@
 ### Matriculation Number: s1659436
 
 --------
-### Current State: Render the map (both MapView and CoinzMap) fully displayed.
+### Current State: Firebase everything is fully prepared. The game has basic features all enabled.
