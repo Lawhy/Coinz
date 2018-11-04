@@ -54,4 +54,5 @@ class Coin( id: String, currency: String, value: Double, mapMarker: Marker) {
         return curLatLng.distanceTo(this.marker?.position)
     }
 
+
 }

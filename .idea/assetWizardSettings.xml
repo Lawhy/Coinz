@@ -45,11 +45,11 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="assetType" value="TEXT" />
-                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\icon_makrer.png" />
-                                      <entry key="outputName" value="ic_nine" />
+                                      <entry key="assetType" value="IMAGE" />
+                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\close.png" />
+                                      <entry key="outputName" value="ic_close" />
                                       <entry key="theme" value="CUSTOM" />
-                                      <entry key="themeColor" value="fefefe" />
+                                      <entry key="themeColor" value="000000" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -98,7 +98,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputIconType" value="LAUNCHER_LEGACY" />
+                            <entry key="outputIconType" value="ACTIONBAR" />
                           </map>
                         </option>
                       </PersistentState>
@@ -121,11 +121,11 @@
                           <map>
                             <entry key="assetSourceType" value="FILE" />
                             <entry key="height" value="48" />
-                            <entry key="opacityPercent" value="85" />
-                            <entry key="outputName" value="ic_roundmarker" />
+                            <entry key="opacityPercent" value="94" />
+                            <entry key="outputName" value="ic_close" />
                             <entry key="overrideSize" value="true" />
-                            <entry key="sourceFile" value="C:\Users\msi-cn\Desktop\if_icon-ios7-circle-filled_211716.svg" />
-                            <entry key="width" value="46" />
+                            <entry key="sourceFile" value="C:\Users\msi-cn\Desktop\close.svg" />
+                            <entry key="width" value="48" />
                           </map>
                         </option>
                       </PersistentState>

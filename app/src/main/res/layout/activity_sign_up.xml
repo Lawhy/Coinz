@@ -2,7 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/login_layout"
+    android:id="@+id/sign_up_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/main"
@@ -12,26 +12,31 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <RadioButton
-        android:id="@+id/closePopupBtn"
-        android:layout_width="77dp"
-        android:layout_height="54dp"
-        android:layout_marginStart="4dp"
-        android:elevation="7dp"
-        android:text="@string/login_page_close"
-        android:textSize="12sp"
-        app:layout_constraintLeft_toLeftOf="parent"
+    <ImageButton
+        android:id="@+id/closeSuBtn"
+        android:layout_width="47dp"
+        android:layout_height="46dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/ic_close"
+        app:layout_constraintEnd_toStartOf="@+id/uoeLogo"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@android:color/transparent" />
 
     <android.support.v7.widget.CardView
+        android:id="@+id/suEmailCard"
         android:layout_width="284dp"
         android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="164dp"
         app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="@dimen/activity_horizontal_margin"
+        app:layout_constraintBottom_toTopOf="@+id/suPassCard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -42,7 +47,7 @@
             android:background="@color/trans_white">
 
             <EditText
-                android:id="@+id/emailText"
+                android:id="@+id/suEmail"
                 android:layout_width="230dp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
@@ -57,17 +62,20 @@
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/cardView2"
+        android:id="@+id/suPassCard"
         android:layout_width="284dp"
         android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="244dp"
+        android:layout_marginTop="236dp"
         app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="@dimen/activity_horizontal_margin"
+        app:layout_constraintBottom_toTopOf="@+id/suPassConfirmCard"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.1">
 
         <RelativeLayout
             android:layout_width="290dp"
@@ -75,7 +83,7 @@
             android:background="@color/trans_white">
 
             <EditText
-                android:id="@+id/passwordText"
+                android:id="@+id/suPassword"
                 android:layout_width="230dp"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -87,47 +95,65 @@
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 
+    <android.support.v7.widget.CardView
+        android:id="@+id/suPassConfirmCard"
+        android:layout_width="284dp"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="304dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="@dimen/activity_horizontal_margin"
+        app:layout_constraintBottom_toTopOf="@+id/suSignUpBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.138">
+
+        <RelativeLayout
+            android:layout_width="290dp"
+            android:layout_height="match_parent"
+            android:background="@color/trans_white">
+
+            <EditText
+                android:id="@+id/suConfirmed"
+                android:layout_width="230dp"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginStart="47dp"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:hint="@string/prompt_confirm"
+                android:inputType="textPassword"
+                android:textCursorDrawable="@drawable/blue_cursor" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
     <Button
-        android:id="@+id/inBtn"
+        android:id="@+id/suSignUpBtn"
         android:layout_width="277dp"
         android:layout_height="37dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="368dp"
+        android:layout_marginTop="380dp"
         android:alpha="0.7"
         android:background="@drawable/button_shape2"
-        android:text="@string/action_sign_in_short"
+        android:text="@string/action_sign_up_short"
         android:textColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.507"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <CheckBox
-        android:id="@+id/checkBoxRememberMe"
-        android:layout_width="156dp"
-        android:layout_height="30dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="316dp"
-        android:buttonTint="@color/customBlack1"
-        android:text="@string/check_box_one"
-        android:textColor="@color/colorPrimary"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.042"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/suSignInBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="412dp"
+        android:layout_marginTop="432dp"
         android:background="@android:color/transparent"
-        android:text="@string/action_sign_up_short"
+        android:text="@string/sign_in_long"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

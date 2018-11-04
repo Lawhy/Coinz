@@ -1,5 +1,6 @@
 package com.lawhy.coinz
 
+import android.content.Intent
 import android.graphics.*
 import android.graphics.drawable.Drawable
 import android.location.Location
@@ -12,6 +13,11 @@ import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.widget.Button
 import android.widget.Toast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreSettings
+import com.google.gson.JsonArray
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineListener
 import com.mapbox.android.core.location.LocationEnginePriority
@@ -33,13 +39,11 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.google.gson.JsonObject
-import com.mapbox.mapboxsdk.annotations.Marker
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.style.layers.LineLayer
+import org.json.JSONArray
 import org.json.JSONObject
-import java.io.InputStream
-import java.lang.Exception
 
 class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineListener, OnMapReadyCallback {
 
@@ -52,11 +56,20 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
     private var locationEngine : LocationEngine? = null
     private var locationLayerPlugin: LocationLayerPlugin? = null
+    private var mAuth: FirebaseAuth? = null
+    private var user: FirebaseUser? = null
+    private lateinit var userID: String
+    private var firestore: FirebaseFirestore? = null
 
     private val tag = "MapActivity"
-    private var mapCoins = ArrayList<Coin>() // Store the coins' (on the map) information
+    private var mapToday: String = ""
+    private var coinsOnMap = ArrayList<Coin>() // Store the coins' (on the map) information
     private var collectedCoins = ArrayList<Coin>() // Store the current collected coins
-    private var exchangeRates = HashMap<String, Double>()
+    private var exchangeRates = HashMap<String, Any>()
+
+    /* Override Functions
+    * The below are functions that are overridden
+    * */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,9 +83,137 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
 
+        // Firebase Initialization
+        mAuth = FirebaseAuth.getInstance()
+        user = mAuth?.currentUser
+        userID = user!!.uid
+        firestore = FirebaseFirestore.getInstance()
+        val settings = FirebaseFirestoreSettings.Builder()
+                .setTimestampsInSnapshotsEnabled(true)
+                .build()
+        firestore?.firestoreSettings = settings
+
+        // Obtain current map from DataActivity
+        mapToday = intent.extras["mapToday"] as String
+        if(mapToday == "") {
+            Log.d(tag, "No Coinz map detected!")
+        }
+
     }
 
-    fun enableLocation() {
+    override fun onBackPressed() {
+        val alertDialog = AlertDialog.Builder(this)
+        alertDialog.setTitle("Are you sure!")
+        alertDialog.setMessage("Do you want to return to the login page?")
+        alertDialog.setPositiveButton("YES") { _,_ ->
+            val intent = Intent(this, AuthenticationActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            startActivity(Intent(this, AuthenticationActivity::class.java))}
+        alertDialog.setNegativeButton("NO") {_,_ -> }
+        alertDialog.show()
+    }
+
+    override fun onMapReady(mapboxMap: MapboxMap?) {
+        if(mapboxMap == null) {
+            Log.d(tag, "[onMapReady] mapboxMap is null")
+        } else {
+            map = mapboxMap
+            // Set user interface options
+            map.uiSettings.isCompassEnabled = true
+            map.uiSettings.isZoomControlsEnabled = true
+            // Make location information available
+            enableLocation()
+
+            // If this is the first time opening the map today
+            exchangeRatesToday()
+            loadCoinzMap()
+        }
+    }
+
+    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
+        // Present a toast or a dialog explaining why they need to grant access.
+        Log.d(tag, "Permissions: $permissionsToExplain")
+        Toast.makeText(this, "Need your location to play the game", Toast.LENGTH_SHORT)
+    }
+
+    override fun onPermissionResult(granted: Boolean) {
+        Log.d(tag, "[onPermissionResult] granted == $granted")
+        if (granted) {
+            enableLocation()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onLocationChanged(location: Location?) {
+
+        if(location == null) { Log.d(tag, "[onLocationChanged] location is null")}
+        location?.let{
+            originLoaction = it
+            setCameraPosition(it)
+        }
+
+    }
+
+    @SuppressWarnings("MissingPermission")
+    override fun onConnected() {
+        Log.d(tag, "[onConnected] requesting location updates")
+        locationEngine?.requestLocationUpdates()
+    }
+
+    @SuppressWarnings("MissingPermission")
+    override fun onStart() {
+        super.onStart()
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {
+            locationEngine?.requestLocationUpdates()
+            locationLayerPlugin?.onStart()
+        }
+        mapView.onStart()
+        mySetOnClick()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        locationEngine?.removeLocationUpdates()
+        locationLayerPlugin?.onStop()
+        mapView.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView.onDestroy()
+        locationEngine?.deactivate()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        if(outState != null) {
+            mapView.onSaveInstanceState(outState)
+        }
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView.onLowMemory()
+    }
+
+    /* My Functions
+   * The below are functions that are specially designed
+   * */
+
+    private fun enableLocation() {
         if (PermissionsManager.areLocationPermissionsGranted(this)){
             Log.d(tag, "Permissions are grated")
             initializeLocationEngine()
@@ -120,125 +261,101 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 LatLng(location.latitude, location.longitude), 13.0))
     }
 
-    fun readMapFromInternal(): String {
+    private fun exchangeRatesToday() {
 
-        var json: String
-        try {
-            val stream: InputStream = openFileInput("map_today.geojson")
-            json = stream.bufferedReader().use { it.readText() }
-        } catch (ex: Exception) {
-            ex.printStackTrace()
-            return ""
-        }
-        return json
+        // Parse Geo-Json file and obtain the information we want
+        val jsonObject = JSONObject(mapToday)
+        val rates = jsonObject.get("rates") as JSONObject
+
+        exchangeRates["SHIL"] = rates.getDouble("SHIL")
+        exchangeRates["DOLR"] = rates.getDouble("DOLR")
+        exchangeRates["QUID"] = rates.getDouble("QUID")
+        exchangeRates["PENY"] = rates.getDouble("PENY")
+        Log.d(tag, "Today's exchange rates: $rates")
+
     }
 
-    fun exchangeRatesToday() {
-        val jsonString = readMapFromInternal()
-        if (jsonString == "") {
-            Log.d(tag, "Coinz map is null!")
-        } else {
-            // Parse Geo-Json file and obtain the information we want
-            val fc: List<Feature>? = FeatureCollection.fromJson(jsonString).features()
-            val jsonObject = JSONObject(jsonString)
-            val rates = jsonObject.get("rates") as JSONObject
-
-            exchangeRates["SHIL"] = rates.getDouble("SHIL")
-            exchangeRates["DOLR"] = rates.getDouble("DOLR")
-            exchangeRates["QUID"] = rates.getDouble("QUID")
-            exchangeRates["PENY"] = rates.getDouble("PENY")
-            Log.d(tag, "Today's exchange rates: $rates")
-        }
-    }
-
-    fun initializeLocalMapToday( ) {
+    private fun loadCoinzMap( ) {
 
         // Add Geo-json features on the map
-        val jsonString = readMapFromInternal()
-        if (jsonString == "") {
-            Log.d(tag, "Coinz map is null!")
-        } else {
-            Log.d(tag, "Enable Coinz Map!")
+        Log.d(tag, "Enable Coinz Map!")
 
-            val jsonSource = GeoJsonSource("geojson", jsonString)
-            map.addSource(jsonSource)
-            map.addLayer(LineLayer("geojson", "geojson"))
+        val jsonSource = GeoJsonSource("geojson", mapToday)
+        map.addSource(jsonSource)
+        map.addLayer(LineLayer("geojson", "geojson"))
 
-            // Parse Geo-Json file and obtain the information we want
-            val fc: List<Feature>? = FeatureCollection.fromJson(jsonString).features()
-
-            for (f in fc!!.iterator()) {
-
-                // Extract the properties
-                val properties:JsonObject? = f.properties()
-                if (properties == null) {
-                    Log.d(tag, "Empty properties for the current feature.")
-                    continue
-                }
-                val id = properties.get("id").asString
-                val value = properties.get("value").asDouble
-                val currency = properties.get("currency").asString
-                val symbol = properties.get("marker-symbol").asInt
-                val color = properties["marker-color"].asString
-
-                // Using the IconUtils class methods to combine color and number on the same icon
-                var icMarker = ContextCompat.getDrawable(this, R.drawable.ic_roundmarker)
-                var colorFilter = LightingColorFilter(Color.parseColor(color), Color.parseColor(color))
-                icMarker?.colorFilter = colorFilter
-
-                var icNumber : Drawable? = null
-                when(symbol) {
-                    0 -> icNumber = ContextCompat.getDrawable(this, R.drawable.ic_zero)
-                    1 -> icNumber = ContextCompat.getDrawable(this, R.drawable.ic_one)
-                    2 -> icNumber = ContextCompat.getDrawable(this, R.drawable.ic_two)
-                    3 -> icNumber = ContextCompat.getDrawable(this, R.drawable.ic_three)
-                    4 -> icNumber = ContextCompat.getDrawable(this, R.drawable.ic_four)
-                    5 -> icNumber = ContextCompat.getDrawable(this, R.drawable.ic_five)
-                    6 -> icNumber = ContextCompat.getDrawable(this, R.drawable.ic_six)
-                    7 -> icNumber = ContextCompat.getDrawable(this, R.drawable.ic_seven)
-                    8 -> icNumber = ContextCompat.getDrawable(this, R.drawable.ic_eight)
-                    9 -> icNumber = ContextCompat.getDrawable(this, R.drawable.ic_nine)
-                    else -> Log.d(tag, "Invalid number on a coin is detected!")
-                }
-
-                var combinedDrawable = IconUtils.combineDrawable(icMarker, icNumber)
-                var icon = IconUtils.drawableToIcon(this, combinedDrawable)
-
-                // Extract the geometric information and add markers
-                val point = f.geometry()
-                if (point is Point) {
-
-                    val pos = LatLng(point.latitude(), point.longitude())
-                    val marker = map.addMarker(MarkerOptions()
-                            .title(currency)
-                            .snippet("Value: $value" )
-                            .icon(icon)
-                            .position(pos))
-
-                    val coin = Coin(id, currency, value, marker) // Parse the information into a coin object
-                    mapCoins.add(coin)
-                }
+        // Parse each feature and generate coin correspondingly
+        val fc: List<Feature>? = FeatureCollection.fromJson(mapToday).features()
+        for (f in fc!!.iterator()) {
+            val coin = generateCoinOnMap(f)
+            if (coin != null) {
+                coinsOnMap.add(coin)
             }
-
-            Log.d(tag, "Map is fully prepared now !")
-            Log.d(tag, "There are ${mapCoins.size} coins! " +
-                    "The first one is ${mapCoins[0].currency} " +
-                    "with value ${mapCoins[0].value}")
         }
+
+        Log.d(tag, "Map is fully prepared now !")
+        Log.d(tag, "There are ${coinsOnMap.size} coins! " +
+                "The first one is ${coinsOnMap[0].currency} " +
+                "with value ${coinsOnMap[0].value}")
+
     }
 
-    fun checkNearestCoin(location: Location) : Coin? {
+    private fun generateCoinOnMap(f: Feature): Coin?{
+
+        var coin: Coin? = null
+
+        // Extract the properties
+        val properties:JsonObject? = f.properties()
+        if (properties == null) {
+            Log.d(tag, "Empty properties for the current feature.")
+            return null
+        }
+
+        val id = properties.get("id").asString
+        val value = properties.get("value").asDouble
+        val currency = properties.get("currency").asString
+        val symbol = properties.get("marker-symbol").asInt
+        val color = properties["marker-color"].asString
+
+        // Using the IconUtils class methods to combine color and number on the same icon
+        val icMarker = ContextCompat.getDrawable(this, R.drawable.ic_roundmarker)
+        val colorFilter = LightingColorFilter(Color.parseColor(color), Color.parseColor(color))
+        icMarker?.colorFilter = colorFilter
+
+        val icNumber : Drawable? = MyUtil().symbolDrawable(this, symbol)
+        val combinedDrawable = IconUtils.combineDrawable(icMarker, icNumber)
+        val icon = IconUtils.drawableToIcon(this, combinedDrawable)
+
+        // Extract the geometric information and add marker and coin
+        val point = f.geometry()
+        if (point is Point) {
+
+            // add marker
+            val pos = LatLng(point.latitude(), point.longitude())
+            val marker = map.addMarker(MarkerOptions()
+                    .title(currency)
+                    .snippet("Value: $value" )
+                    .icon(icon)
+                    .position(pos))
+
+            coin = Coin(id, currency, value, marker) // Parse the information into a coin object
+        }
+
+        return coin
+    }
+
+    private fun checkNearestCoin(location: Location) : Coin? {
 
         var nearestCoin : Coin? = null
-        val dists = ArrayList<Double>(mapCoins.size)
-        mapCoins.stream().forEach { coin -> dists.add(coin.distToLocation(location)) }
+        val dists = ArrayList<Double>(coinsOnMap.size)
+        coinsOnMap.stream().forEach { coin -> dists.add(coin.distToLocation(location)) }
 
         // Find the minimum distance's index
         val minDist = dists.min()
         if (minDist == null) {
             Log.d(tag, "No minimum distance! Something is wrong!")
         } else if (minDist <= 25){
-            nearestCoin = mapCoins[dists.indexOf(minDist)]
+            nearestCoin = coinsOnMap[dists.indexOf(minDist)]
             Log.d(tag, "The nearest coin is a ${nearestCoin.currency} of value ${nearestCoin.value}")
             Toast.makeText(this, "A ${nearestCoin.currency} is nearby!", Toast.LENGTH_SHORT).show()
         } else {
@@ -247,76 +364,66 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         return nearestCoin
     }
 
-    override fun onBackPressed() {
-        val alertDialog = AlertDialog.Builder(this)
-        alertDialog.setTitle("Are you sure!")
-        alertDialog.setMessage("Do you want to return to the Login Page?")
-        alertDialog.setPositiveButton("YES", { dialogInterface, i -> finish()})
-        alertDialog.setNegativeButton("NO", {dialogInterface, i -> })
-        alertDialog.show()
-    }
+    private fun collectNearestCoin(nearestCoin: Coin) {
 
-    override fun onMapReady(mapboxMap: MapboxMap?) {
-        if(mapboxMap == null) {
-            Log.d(tag, "[onMapReady] mapboxMap is null")
+        val marker = nearestCoin.marker
+        if (marker == null) {
+            Log.d(tag, "This coin has been removed on map, check!")
         } else {
-            map = mapboxMap
-            // Set user interface options
-            map?.uiSettings?.isCompassEnabled = true
-            map?.uiSettings?.isZoomControlsEnabled = true
-            // Make location information available
-            enableLocation()
-
-            exchangeRatesToday()
-            initializeLocalMapToday()
-        }
-    }
-
-    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
-        // Present a toast or a dialog explaining why they need to grant access.
-        Log.d(tag, "Permissions: $permissionsToExplain")
-        Toast.makeText(this, "Need your location to play the game", Toast.LENGTH_SHORT)
-    }
-
-    override fun onPermissionResult(granted: Boolean) {
-        Log.d(tag, "[onPermissionResult] granted == $granted")
-        if (granted) {
-            enableLocation()
-        }
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        permissionManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    override fun onLocationChanged(location: Location?) {
-
-        if(location == null) { Log.d(tag, "[onLocationChanged] location is null")}
-
-        location?.let{
-            originLoaction = it
-            setCameraPosition(it)
+            collectedCoins.add(nearestCoin)
+            coinsOnMap.remove(nearestCoin)
+            map.removeMarker(marker)
+            updateCoinzMap(nearestCoin)
+            Toast.makeText(this, "Successfully collect a ${nearestCoin.currency}!", Toast.LENGTH_SHORT).show()
+            Log.d(tag, "${collectedCoins.size} collected!")
+            Log.d(tag, "${coinsOnMap.size} remaining!")
         }
 
-        assert(mapCoins.size + collectedCoins.size == 50)
-
     }
 
-    @SuppressWarnings("MissingPermission")
-    override fun onConnected() {
-        Log.d(tag, "[onConnected] requesting location updates")
-        locationEngine?.requestLocationUpdates()
-    }
+    private fun updateCoinzMap(collectedCoin: Coin) {
 
-    @SuppressWarnings("MissingPermission")
-    override fun onStart() {
-        super.onStart()
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
-            locationEngine?.requestLocationUpdates()
-            locationLayerPlugin?.onStart()
+        // Delete collected coins from the jsonString
+        val jobj = JSONObject(mapToday)
+        val len1 = jobj.toString().length
+        val features = jobj.get("features") as JSONArray
+        var removeIndex = -1
+
+        // Find the index of the feature that contains the collected coin's information
+        for (i in 1..features.length()) {
+            val feature = features.get(i-1) as JSONObject
+            val properties = feature.get("properties") as JSONObject
+            val id = collectedCoin.id
+            val currency = collectedCoin.currency
+            val value = collectedCoin.value
+            if (properties.get("id") as String == id
+                    && properties.get("currency") as String == currency
+                    && properties.get("value") as String == value.toString()) {
+                Log.d(tag, "Coin: [$currency] of [$value] is about to be removed from mapToday.")
+                removeIndex = i-1
+                break
+            }
         }
-        mapView.onStart()
 
+        // Remove the corresponding coin from the JSON string and update mapToday
+        features.remove(removeIndex)
+        jobj.put("features", features)
+        Log.d(tag, "Length Difference after Removal: ${len1 - jobj.toString().length}")
+        mapToday = jobj.toString()
+
+        // upload the modified map to firestore
+        firestore?.collection("maps")
+                ?.document(userID)
+                ?.set(mapOf("mapToday" to  mapToday))
+                ?.addOnSuccessListener {
+                    Log.d(tag, "Map Today has been modified!")
+                }
+                ?.addOnFailureListener {
+                    Log.d(tag, "Fail to upload changes on map!", it)
+                }
+    }
+
+    private fun mySetOnClick() {
         // Set the collect button
         collectButton.setOnClickListener {
 
@@ -331,15 +438,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 alertDialog.setTitle("Found a new coin!")
                 alertDialog.setMessage("Do you want to collect this coin?")
                 alertDialog.setPositiveButton("YES") { _, _ ->
-                    val marker = nearestCoin.marker
-                    if (marker == null) {
-                        Log.d(tag, "This coin has been removed on map, check!")
-                    } else {
-                        collectedCoins.add(nearestCoin)
-                        mapCoins.remove(nearestCoin)
-                        map.removeMarker(marker)
-                        Toast.makeText(this, "Successfully collect a ${nearestCoin.currency}!", Toast.LENGTH_SHORT).show()
-                    }
+                    collectNearestCoin(nearestCoin)
                 }
                 alertDialog.setNegativeButton("NO") { _, _ -> }
                 alertDialog.show()
@@ -353,40 +452,6 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        mapView.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mapView.onPause()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        locationEngine?.removeLocationUpdates()
-        locationLayerPlugin?.onStop()
-        mapView.onStop()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapView.onDestroy()
-        locationEngine?.deactivate()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
-        super.onSaveInstanceState(outState, outPersistentState)
-        if(outState != null) {
-            mapView.onSaveInstanceState(outState)
-        }
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        mapView.onLowMemory()
-    }
 
 }
 

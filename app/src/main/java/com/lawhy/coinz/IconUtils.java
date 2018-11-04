@@ -18,7 +18,9 @@ import com.mapbox.mapboxsdk.annotations.IconFactory;
 
 public class IconUtils {
     /**
-     * Demonstrates converting any Drawable to an Icon, for use as a marker icon.
+     * Some handy Utils:
+     * 1. drawableToIcon: Converting any Drawable to an Icon, for use as a marker icon.
+     * 2. combineDrawable: Overlap two drawables and create a new one
      */
 
 

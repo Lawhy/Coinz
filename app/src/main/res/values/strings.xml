@@ -21,7 +21,7 @@
     <string name="check_box_one">Remember me</string>
     <string name="logo">uoeLogo</string>
     <string name="login_page_close">Close</string>
-    
+
     <!--mapbox token-->
     <string name="access_token">pk.eyJ1IjoibGF3aHkiLCJhIjoiY2puaTFtamk1MDRjYjNwczVsaDM3NzZ2byJ9.b0VaSeVWY14Ip6VIxk77CA</string>
 
@@ -37,5 +37,8 @@
     <string name="eight">8</string>
     <string name="nine">9</string>
     <string name="zero">0</string>
+    <string name="sign_up_long">Don\'t have an account? Sign up</string>
+    <string name="sign_in_long">Already have an account? Sign in</string>
+    <string name="prompt_confirm">Confirm your password here...</string>
 
 </resources>
