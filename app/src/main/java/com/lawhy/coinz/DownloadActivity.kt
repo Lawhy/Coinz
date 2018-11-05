@@ -46,7 +46,7 @@ class DownloadActivity : AppCompatActivity() {
                 .build()
         firestore?.firestoreSettings = settings
 
-        currentDate = MyUtil().getCurrentDate()
+        currentDate = MyUtils().getCurrentDate()
         downloadDate = "NOTHING YET"
 
     }

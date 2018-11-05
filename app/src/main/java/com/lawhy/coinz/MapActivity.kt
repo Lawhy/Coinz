@@ -17,7 +17,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.gson.JsonArray
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineListener
 import com.mapbox.android.core.location.LocationEnginePriority
@@ -247,10 +246,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     @SuppressWarnings("MissingPermission")
     private fun initializeLocationLayer() {
 
-        if (mapView == null) { Log.d(tag, "mapView is null"); return}
-        if (map == null) { Log.d(tag, "map is null"); return}
-
-        locationLayerPlugin = LocationLayerPlugin(mapView!!, map!!, locationEngine)
+        locationLayerPlugin = LocationLayerPlugin(mapView, map, locationEngine)
         locationLayerPlugin?.setLocationLayerEnabled(true)
         locationLayerPlugin?.cameraMode = CameraMode.TRACKING
         locationLayerPlugin?.renderMode = RenderMode.COMPASS
@@ -317,14 +313,14 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         val symbol = properties.get("marker-symbol").asInt
         val color = properties["marker-color"].asString
 
-        // Using the IconUtils class methods to combine color and number on the same icon
+        // Using the MyUtils class methods to combine color and number on the same icon
         val icMarker = ContextCompat.getDrawable(this, R.drawable.ic_roundmarker)
         val colorFilter = LightingColorFilter(Color.parseColor(color), Color.parseColor(color))
         icMarker?.colorFilter = colorFilter
 
-        val icNumber : Drawable? = MyUtil().symbolDrawable(this, symbol)
-        val combinedDrawable = IconUtils.combineDrawable(icMarker, icNumber)
-        val icon = IconUtils.drawableToIcon(this, combinedDrawable)
+        val icNumber : Drawable? = MyUtils().symbolDrawable(this, symbol)
+        val combinedDrawable = MyUtils().combineDrawable(icMarker, icNumber)
+        val icon = MyUtils().drawableToIcon(this, combinedDrawable)
 
         // Extract the geometric information and add marker and coin
         val point = f.geometry()
