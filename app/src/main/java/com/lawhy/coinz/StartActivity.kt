@@ -24,7 +24,7 @@ class StartActivity : AppCompatActivity() {
         val alertDialog = AlertDialog.Builder(this)
         alertDialog.setTitle("Are you sure!")
         alertDialog.setMessage("Do you want to exit the game?")
-        alertDialog.setPositiveButton("YES") { _,_ -> finish()}
+        alertDialog.setPositiveButton("YES") { _,_ -> moveTaskToBack(true)}
         alertDialog.setNegativeButton("NO") {_,_ -> }
         alertDialog.show()
     }

@@ -55,6 +55,8 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
     private var locationEngine : LocationEngine? = null
     private var locationLayerPlugin: LocationLayerPlugin? = null
+
+    // Firebase everything
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private lateinit var userID: String
@@ -63,8 +65,9 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     private val tag = "MapActivity"
     private var mapToday: String = ""
     private var coinsOnMap = ArrayList<Coin>() // Store the coins' (on the map) information
-    private var collectedCoins = ArrayList<Coin>() // Store the current collected coins
-    private var exchangeRates = HashMap<String, Any>()
+    private var collectedCoins = ArrayList<Coin>() // Store the *current* collected coins
+                                                   // This means it is temporary.
+    private var exchangeRates = HashMap<String, Any>() // Store today's exchange rates
 
     /* Override Functions
     * The below are functions that are overridden
@@ -107,7 +110,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         alertDialog.setPositiveButton("YES") { _,_ ->
             val intent = Intent(this, AuthenticationActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(Intent(this, AuthenticationActivity::class.java))}
+            startActivity(intent)}
         alertDialog.setNegativeButton("NO") {_,_ -> }
         alertDialog.show()
     }

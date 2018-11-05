@@ -63,7 +63,7 @@ class DownloadActivity : AppCompatActivity() {
         alertDialog.setPositiveButton("YES") { _,_ ->
             val intent = Intent(this, AuthenticationActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(Intent(this, AuthenticationActivity::class.java))}
+            startActivity(intent)}
         alertDialog.setNegativeButton("NO") {_,_ -> }
         alertDialog.show()
     }
