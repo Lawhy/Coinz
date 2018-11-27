@@ -63,7 +63,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     private var locationEngine : LocationEngine? = null
     private var locationLayerPlugin: LocationLayerPlugin? = null
 
-    // Firebase everything
+    // Firebase
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private lateinit var userID: String
@@ -79,7 +79,16 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                                 // usage: keep coins with the same coinID
     private val interpolator = OvershootInterpolator()
     private var mapToday: String = ""
-    private var firstTimeLaunch: Boolean = true
+
+    /* A very important Boolean that has been passed through DownloadActivity, DataActivity
+     * and now arrives MapActivity. It indicates if it is the first time to launch the app today,
+     * if so, map should be re-downloaded, and on Monday coins should be removed from Wallet.
+     * This Boolean should remain false after the app has been launched once within a day,
+     * my resort here is to set it false in the renewalWallet() function which is invoked on start.
+     * */
+    private var firstTimeLaunch: Boolean = false
+
+
     private var coinsOnMap = ArrayList<Coin>() // Store the coins' (on the map) information
     private var collectedCoins = ArrayList<Coin>() // Store the *current* collected coins
                                                    // This means it is temporary.
@@ -116,7 +125,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
 
         mapToday = intent.getStringExtra("mapToday")
-        firstTimeLaunch = intent.getBooleanExtra("firstLaunchToday", true)
+        firstTimeLaunch = intent.getBooleanExtra("firstLaunchToday", false)
         // Obtain current map and firstTimeLaunch Info from DataActivity
         if (mapToday == "") {
             Log.w(tag, "No Coinz map detected!")
@@ -474,6 +483,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                      }
         }
 
+        firstTimeLaunch = false // set this boolean to false to prevent overlapped renewal
     }
 
     private fun updateWallet() {
