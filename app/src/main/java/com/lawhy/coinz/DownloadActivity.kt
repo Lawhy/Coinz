@@ -2,9 +2,9 @@ package com.lawhy.coinz
 
 import android.content.Intent
 import android.os.AsyncTask
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
+import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -47,7 +47,7 @@ class DownloadActivity : AppCompatActivity() {
         firestore?.firestoreSettings = settings
 
         currentDate = MyUtils().getCurrentDate()
-        downloadDate = "NOTHING YET"
+        downloadDate = ""
 
     }
 

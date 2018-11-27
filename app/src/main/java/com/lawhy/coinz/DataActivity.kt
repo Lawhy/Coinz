@@ -1,12 +1,8 @@
 package com.lawhy.coinz
 
 import android.content.Intent
-import android.graphics.Color
-import android.graphics.LightingColorFilter
-import android.graphics.drawable.Drawable
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.widget.Toast
@@ -14,13 +10,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import com.google.gson.JsonObject
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.annotations.MarkerOptions
-import com.mapbox.mapboxsdk.geometry.LatLng
-import org.json.JSONObject
 
 class DataActivity : AppCompatActivity() {
 
@@ -29,11 +18,10 @@ class DataActivity : AppCompatActivity() {
     private var firestore: FirebaseFirestore? = null
     private lateinit var userID: String
 
-    private var firstDownloadToday: Boolean = true
-
     private val tag = "DataActivity"
 
     // data prepared for mapActivity
+    private var firstDownloadToday: Boolean = true
     private var mapToday: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,8 +39,7 @@ class DataActivity : AppCompatActivity() {
         firestore?.firestoreSettings = settings
 
         // Modify the value of firstDownloadToday according to the sent intent
-        val extras = intent.extras
-        firstDownloadToday = extras["firstDownloadToday"] as Boolean
+        firstDownloadToday = intent.getBooleanExtra("firstDownloadToday", true)
 
         Log.d(tag, "FirstDownloadToady: $firstDownloadToday")
     }
@@ -68,7 +55,7 @@ class DataActivity : AppCompatActivity() {
 
         if(firstDownloadToday) {
             mapToday = DownloadActivity.DownloadCompleteRunner.result
-            if (mapToday == null) {
+            if (mapToday.isNullOrEmpty()) {
                 Log.d(tag, "No Coinz Map downloaded!")
             } else {
                 Log.d(tag, "Coinz Map is prepared!")
@@ -98,7 +85,7 @@ class DataActivity : AppCompatActivity() {
                     ?.document(userID)?.get()
                     ?.addOnSuccessListener { snapshot ->
                         val data = snapshot.data
-                        if (data == null || data.isEmpty()) {
+                        if (data.isNullOrEmpty()) {
                             Log.d(tag, "No map stored! Check database!")
                             // Serious Error will happen if downloadDate has been updated whereas Map is not presented
                             // In this case, remove the downloadDate and let user try again

@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.support.design.widget.FloatingActionButton
-import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
@@ -115,17 +114,13 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 .build()
         firestore?.firestoreSettings = settings
 
-        // This is a very serious error because no data means no game!
-        if(intent.extras["mapToday"]==null || intent.extras["firstLaunchToday"]==null) {
-            Log.wtf(tag, "Data is not passed through Intent!!!")
-        }
+
+        mapToday = intent.getStringExtra("mapToday")
+        firstTimeLaunch = intent.getBooleanExtra("firstLaunchToday", true)
         // Obtain current map and firstTimeLaunch Info from DataActivity
-        mapToday = intent.extras["mapToday"] as String
-        if(mapToday == "") {
+        if (mapToday == "") {
             Log.w(tag, "No Coinz map detected!")
         }
-        firstTimeLaunch = intent.extras["firstLaunchToday"] as Boolean
-
     }
 
     override fun onBackPressed() {
@@ -344,7 +339,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         val color = properties["marker-color"].asString
 
         // Using the MyUtils class methods to combine color and number on the same icon
-        val icMarker = ContextCompat.getDrawable(this, R.drawable.ic_roundmarker)
+        val icMarker = getDrawable(R.drawable.ic_roundmarker)
         val colorFilter = LightingColorFilter(Color.parseColor(color), Color.parseColor(color))
         icMarker?.colorFilter = colorFilter
 
@@ -360,7 +355,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
             val pos = LatLng(point.latitude(), point.longitude())
             val marker = map.addMarker(MarkerOptions()
                     .title(currency)
-                    .snippet("Value: $value" )
+                    .snippet("Value: %.3f".format(value) )
                     .icon(icon)
                     .position(pos))
 

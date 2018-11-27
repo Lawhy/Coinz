@@ -29,6 +29,7 @@ class MyUtils {
         return currentDate.trim()
     }
 
+
     fun symbolDrawable(context: Context, symbol: Int): Drawable?{
         var icNumber : Drawable? = null
         when(symbol) {
