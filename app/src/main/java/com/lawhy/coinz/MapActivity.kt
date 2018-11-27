@@ -193,11 +193,11 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     @SuppressWarnings("MissingPermission")
     override fun onStart() {
         super.onStart()
+        mapView.onStart()
         if (PermissionsManager.areLocationPermissionsGranted(this)) {
             locationEngine?.requestLocationUpdates()
             locationLayerPlugin?.onStart()
         }
-        mapView.onStart()
         mySetOnClick()
         renewWallet()
     }
