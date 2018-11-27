@@ -11,6 +11,8 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
 import android.util.Log
+import android.view.View
+import android.view.animation.OvershootInterpolator
 import android.widget.Button
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
@@ -43,6 +45,7 @@ import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.style.layers.LineLayer
 import org.json.JSONArray
 import org.json.JSONObject
+import java.time.LocalDate
 
 class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineListener, OnMapReadyCallback {
 
@@ -51,7 +54,12 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     private lateinit var permissionManager: PermissionsManager
     private lateinit var originLoaction: Location
     private lateinit var collectButton: Button
-    private lateinit var popupMenuButton: FloatingActionButton
+
+    // The FAB menu that lead to another activity
+    private lateinit var fabMenu: FloatingActionButton
+    private lateinit var fabMyAccount: FloatingActionButton
+    private lateinit var fabFriendList: FloatingActionButton
+    private lateinit var fabTrade: FloatingActionButton
 
     private var locationEngine : LocationEngine? = null
     private var locationLayerPlugin: LocationLayerPlugin? = null
@@ -62,16 +70,25 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     private lateinit var userID: String
     private var firestore: FirebaseFirestore? = null
 
+    // Tags
     private val tag = "MapActivity"
+    private val walletTag = "WALLET"
+
+    private val translationY = -100f
+    private var isMenuOpen = false
+    private var simpleIndex = 0 // simple index for coins in the wallet
+                                // usage: keep coins with the same coinID
+    private val interpolator = OvershootInterpolator()
     private var mapToday: String = ""
+    private var firstTimeLaunch: Boolean = true
     private var coinsOnMap = ArrayList<Coin>() // Store the coins' (on the map) information
     private var collectedCoins = ArrayList<Coin>() // Store the *current* collected coins
                                                    // This means it is temporary.
     private var exchangeRates = HashMap<String, Any>() // Store today's exchange rates
 
     /* Override Functions
-    * The below are functions that are overridden
-    * */
+     * Below are functions that are overridden
+     */
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,7 +97,10 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
         mapView = findViewById(R.id.mapboxMapView)
         collectButton = findViewById(R.id.collectButton)
-        popupMenuButton = findViewById(R.id.popupMenuButton)
+        fabMenu = findViewById(R.id.fab_menu)
+        fabMyAccount = findViewById(R.id.fab_myAccount)
+        fabFriendList = findViewById(R.id.fab_friendList)
+        fabTrade = findViewById(R.id.fab_trade)
 
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
@@ -95,11 +115,16 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 .build()
         firestore?.firestoreSettings = settings
 
-        // Obtain current map from DataActivity
+        // This is a very serious error because no data means no game!
+        if(intent.extras["mapToday"]==null || intent.extras["firstLaunchToday"]==null) {
+            Log.wtf(tag, "Data is not passed through Intent!!!")
+        }
+        // Obtain current map and firstTimeLaunch Info from DataActivity
         mapToday = intent.extras["mapToday"] as String
         if(mapToday == "") {
-            Log.d(tag, "No Coinz map detected!")
+            Log.w(tag, "No Coinz map detected!")
         }
+        firstTimeLaunch = intent.extras["firstLaunchToday"] as Boolean
 
     }
 
@@ -174,6 +199,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         }
         mapView.onStart()
         mySetOnClick()
+        renewWallet()
     }
 
     override fun onResume() {
@@ -188,6 +214,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
     override fun onStop() {
         super.onStop()
+        updateWallet() // Update the Wallet Information onStop
         locationEngine?.removeLocationUpdates()
         locationLayerPlugin?.onStop()
         mapView.onStop()
@@ -212,8 +239,8 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     }
 
     /* My Functions
-   * The below are functions that are specially designed
-   * */
+     * The below are functions that are specially designed
+     */
 
     private fun enableLocation() {
         if (PermissionsManager.areLocationPermissionsGranted(this)){
@@ -257,7 +284,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
     private fun setCameraPosition(location: Location) {
         map.animateCamera(CameraUpdateFactory.newLatLngZoom(
-                LatLng(location.latitude, location.longitude), 13.0))
+                LatLng(location.latitude, location.longitude), map.cameraPosition.zoom))
     }
 
     private fun exchangeRatesToday() {
@@ -270,14 +297,14 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         exchangeRates["DOLR"] = rates.getDouble("DOLR")
         exchangeRates["QUID"] = rates.getDouble("QUID")
         exchangeRates["PENY"] = rates.getDouble("PENY")
-        Log.d(tag, "Today's exchange rates: $rates")
+        Log.i(tag, "Today's exchange rates: $rates")
 
     }
 
     private fun loadCoinzMap( ) {
 
         // Add Geo-json features on the map
-        Log.d(tag, "Enable Coinz Map!")
+        Log.i(tag, "Enable Coinz Map!")
 
         val jsonSource = GeoJsonSource("geojson", mapToday)
         map.addSource(jsonSource)
@@ -292,8 +319,8 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
             }
         }
 
-        Log.d(tag, "Map is fully prepared now !")
-        Log.d(tag, "There are ${coinsOnMap.size} coins! " +
+        Log.i(tag, "Map is fully prepared now !")
+        Log.i(tag, "There are ${coinsOnMap.size} coins! " +
                 "The first one is ${coinsOnMap[0].currency} " +
                 "with value ${coinsOnMap[0].value}")
 
@@ -306,7 +333,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         // Extract the properties
         val properties:JsonObject? = f.properties()
         if (properties == null) {
-            Log.d(tag, "Empty properties for the current feature.")
+            Log.w(tag, "[MapGeneration] Empty properties for the current feature.")
             return null
         }
 
@@ -351,14 +378,14 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
         // Find the minimum distance's index
         val minDist = dists.min()
-        if (minDist == null) {
-            Log.d(tag, "No minimum distance! Something is wrong!")
-        } else if (minDist <= 25){
-            nearestCoin = coinsOnMap[dists.indexOf(minDist)]
-            Log.d(tag, "The nearest coin is a ${nearestCoin.currency} of value ${nearestCoin.value}")
-            Toast.makeText(this, "A ${nearestCoin.currency} is nearby!", Toast.LENGTH_SHORT).show()
-        } else {
-            Log.d(tag, "No coin can be collected now.")
+        when {
+            minDist == null -> Log.w(tag, "No minimum distance! Something is wrong!")
+            minDist <= 25 -> {
+                nearestCoin = coinsOnMap[dists.indexOf(minDist)]
+                Log.i(tag, "The nearest coin is a ${nearestCoin.currency} of value ${nearestCoin.value}")
+                Toast.makeText(this, "A ${nearestCoin.currency} is nearby!", Toast.LENGTH_SHORT).show()
+            }
+            else -> Log.i(tag, "No coin can be collected now.")
         }
         return nearestCoin
     }
@@ -374,8 +401,8 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
             map.removeMarker(marker)
             updateCoinzMap(nearestCoin)
             Toast.makeText(this, "Successfully collect a ${nearestCoin.currency}!", Toast.LENGTH_SHORT).show()
-            Log.d(tag, "${collectedCoins.size} collected!")
-            Log.d(tag, "${coinsOnMap.size} remaining!")
+            Log.i(tag, "${collectedCoins.size} collected!")
+            Log.i(tag, "${coinsOnMap.size} remaining!")
         }
 
     }
@@ -422,6 +449,58 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 }
     }
 
+    // Remove expired coins on every Monday First Launch
+    private fun renewWallet() {
+
+        // Parameters that check whether we need to renew the wallet, i.e. remove expired coins
+        val day = LocalDate.now().dayOfWeek.name
+        Log.d(walletTag, "Today is $day, first time launch: $firstTimeLaunch")
+        // Give a fair warning of coins about to be expired on the weekend
+        if (day == "SATURDAY" || day == "SUNDAY") {
+            Toast.makeText(this, "It's $day now! Use your coins!", Toast.LENGTH_SHORT).show()
+        }
+
+        if (day == "MONDAY" && firstTimeLaunch) {
+            firestore?.collection("coins")
+                    ?.document(userID)?.set(mapOf())
+                    ?.addOnSuccessListener { Toast.makeText(this, "It's $day now! Unused Coins have been expired", Toast.LENGTH_SHORT).show() }
+                    ?.addOnFailureListener { Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show() }
+        } else {
+            firestore?.collection("coins")
+                     ?.document(userID)
+                     ?.get()
+                     ?.addOnSuccessListener {
+                         val data = it.data
+                         if (data == null || data.isEmpty()) {
+                             Log.wtf(walletTag, "Really weird! Data of coins cannot be null or empty! Check Database!")
+                         } else {
+                             simpleIndex = it.data?.size!!  // Use simple ID, i.e. 0,1,2,...
+                         }
+                     }
+        }
+
+    }
+
+    private fun updateWallet() {
+
+        for (coin in collectedCoins) {
+            val coinMap = HashMap<String, Any>()
+            coinMap["id"] = coin.id
+            coinMap["currency"] = coin.currency
+            coinMap["value"] = coin.value
+
+            firestore?.collection("coins")
+                    ?.document(userID)
+                    ?.update(mapOf("$simpleIndex" to coinMap))
+                    ?.addOnSuccessListener {
+                        Log.i(walletTag, "${simpleIndex}th coin has been added")
+                    }
+            simpleIndex += 1
+        }
+
+        collectedCoins = ArrayList() // empty the temporary collectedCoins list
+    }
+
     private fun mySetOnClick() {
         // Set the collect button
         collectButton.setOnClickListener {
@@ -444,13 +523,125 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
             }
         }
 
-        // Set the pop-up menu button
-        popupMenuButton.setOnClickListener {
-            // pop-up menu
-            Toast.makeText(this, "MENU!", Toast.LENGTH_SHORT).show()
-        }
+        // Enable the Fab Menu
+        initFabMenu()
     }
 
+    /*
+     * Functions related to the Floating Action Button Menu that leads to another activity
+     * 1. initFabMenu: initialise button animation and set on-click listener
+     * 2. openMenu: Add animation effect on menu open
+     * 3. closeMenu: Add animation effect on menu closed
+     */
+
+    private fun initFabMenu(){
+
+        // The three sub-buttons are invisible initially
+        fabMyAccount.visibility = View.GONE
+        fabFriendList.visibility = View.GONE
+        fabTrade.visibility = View.GONE
+        // Set alpha to 0f for animation effect latter
+        fabMyAccount.alpha = 0f
+        fabFriendList.alpha = 0f
+        fabTrade.alpha = 0f
+
+        fabMenu.setOnClickListener{
+            Log.i(tag, "onClick: fab Menu")
+            if (isMenuOpen) {
+                closeMenu()
+            } else {
+                openMenu()
+            }
+        }
+        fabMyAccount.setOnClickListener {
+            Log.i(tag, "onClick: fab -> MyAccount")
+            closeMenu()
+            val intent = Intent(this, MyAccountActivity::class.java)
+            intent.putExtra("exchangeRates", exchangeRates)
+            startActivity(intent)
+        }
+        fabFriendList.setOnClickListener {
+            Log.i(tag, "onClick: fab -> FriendList")
+            closeMenu()
+        }
+        fabTrade.setOnClickListener {
+            Log.i(tag, "onClick: fab -> Trade")
+            closeMenu()
+        }
+
+    }
+
+    private fun openMenu() {
+        isMenuOpen = !isMenuOpen
+
+        Log.i(tag, "fab Menu is open!")
+        fabMenu.animate()
+                .setInterpolator(interpolator)
+                .rotationBy(45f)
+                .setDuration(300)
+                .start()
+
+        fabMyAccount.animate()
+                .translationY(0f)
+                .alpha(1f)
+                .setInterpolator(interpolator)
+                .setDuration(300)
+                .start()
+        fabMyAccount.visibility = View.VISIBLE
+
+        fabFriendList.animate()
+                .translationY(0f)
+                .alpha(1f)
+                .setInterpolator(interpolator)
+                .setDuration(300)
+                .start()
+        fabFriendList.visibility = View.VISIBLE
+
+        fabTrade.animate()
+                .translationY(0f)
+                .alpha(1f)
+                .setInterpolator(interpolator)
+                .setDuration(300)
+                .start()
+        fabTrade.visibility = View.VISIBLE
+
+    }
+
+    private fun closeMenu() {
+        isMenuOpen = !isMenuOpen
+
+        Log.i(tag, "fab Menu is closed!")
+        fabMenu.animate()
+                .setInterpolator(interpolator)
+                .rotationBy(45f)
+                .setDuration(300)
+                .start()
+
+        fabMyAccount.animate()
+                .translationY(translationY)
+                .alpha(0f)
+                .setInterpolator(interpolator)
+                .setDuration(300)
+                .start()
+
+        fabFriendList.animate()
+                .translationY(translationY)
+                .alpha(0f)
+                .setInterpolator(interpolator)
+                .setDuration(300)
+                .start()
+
+        fabTrade.animate()
+                .translationY(translationY)
+                .alpha(0f)
+                .setInterpolator(interpolator)
+                .setDuration(300)
+                .start()
+
+        fabMyAccount.visibility = View.GONE
+        fabFriendList.visibility = View.GONE
+        fabTrade.visibility = View.GONE
+    }
 
 }
 

@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent"
         mapbox:mapbox_cameraTargetLat="55.944"
         mapbox:mapbox_cameraTargetLng="-3.188396"
-        mapbox:mapbox_cameraZoom="13"
+        mapbox:mapbox_cameraZoom="14"
         mapbox:mapbox_styleUrl="@string/mapbox_style_mapbox_streets">
 
     </com.mapbox.mapboxsdk.maps.MapView>
@@ -35,19 +35,57 @@
         app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/popupMenuButton"
-        android:layout_width="52dp"
-        android:layout_height="56dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:clickable="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.027"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        mapbox:srcCompat="@android:drawable/stat_notify_more" />
+    <LinearLayout
+        android:id="@+id/menu_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@android:color/white"
+            android:layout_margin="4dp"
+            android:clickable="true"
+            app:fabSize="normal"
+            app:srcCompat="@drawable/ic_add_black_24dp"
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_myAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@android:color/white"
+            android:layout_margin="4dp"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_account_balance_wallet_black_24dp"
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_friendList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@android:color/white"
+            android:layout_margin="4dp"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_people_black_24dp"
+            />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_trade"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@android:color/white"
+            android:layout_margin="4dp"
+            app:fabSize="mini"
+            app:srcCompat="@drawable/ic_attach_money_black_24dp"
+            />
+
+    </LinearLayout>
 
 
 </android.support.constraint.ConstraintLayout>

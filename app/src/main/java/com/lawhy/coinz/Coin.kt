@@ -4,7 +4,7 @@ import android.location.Location
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.annotations.Marker
 
-class Coin( val id: String,val  currency: String,val value: Double, mapMarker: Marker) {
+class Coin( val id: String,val  currency: String,val value: Double, mapMarker: Marker?) {
 
     val marker: Marker? = mapMarker // The map marker is allowed to be null if the coin has been collected
 

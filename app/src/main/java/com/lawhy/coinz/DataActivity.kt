@@ -63,6 +63,8 @@ class DataActivity : AppCompatActivity() {
         // New intent with the map (either fresh downloaded or obtained from firestore)
         val intent = Intent(this, MapActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        // This is important for valid renewal of local wallet, i.e. remove expired coins
+        intent.putExtra("firstLaunchToday", firstDownloadToday)
 
         if(firstDownloadToday) {
             mapToday = DownloadActivity.DownloadCompleteRunner.result
@@ -94,10 +96,29 @@ class DataActivity : AppCompatActivity() {
             // Obtain the modified mapToday(jsonString) from firestore
             firestore?.collection("maps")
                     ?.document(userID)?.get()
-                    ?.addOnSuccessListener {
-                        val data = it.data
-                        if (data == null) {
+                    ?.addOnSuccessListener { snapshot ->
+                        val data = snapshot.data
+                        if (data == null || data.isEmpty()) {
                             Log.d(tag, "No map stored! Check database!")
+                            // Serious Error will happen if downloadDate has been updated whereas Map is not presented
+                            // In this case, remove the downloadDate and let user try again
+                            firestore?.collection("downloadDate")
+                                    ?.document(userID)?.set(mapOf())
+                                    ?.addOnSuccessListener {
+                                        val alertDialog = AlertDialog.Builder(this)
+                                        alertDialog.setTitle("Data is incorrect!")
+                                        alertDialog.setMessage("Please return to the login and try again")
+                                        alertDialog.setPositiveButton("YES") { _,_ ->
+                                            val accidentalIntent = Intent(this, AuthenticationActivity::class.java)
+                                            accidentalIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                            startActivity(accidentalIntent)
+                                        }
+                                        alertDialog.setNegativeButton("NO") {_,_ -> moveTaskToBack(true)}
+                                        alertDialog.show()
+                                    }
+                                    ?.addOnFailureListener{
+                                        Log.wtf(tag, it)
+                                    }
                         } else {
                             Log.d(tag, "Restore map from the firestore!")
                             mapToday = data["mapToday"].toString().trim()
@@ -114,7 +135,6 @@ class DataActivity : AppCompatActivity() {
         }
 
     }
-
 
     override fun onBackPressed() {
         val alertDialog = AlertDialog.Builder(this)

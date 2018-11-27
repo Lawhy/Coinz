@@ -1,10 +1,14 @@
 package com.lawhy.coinz
 
-class Wallet(coins: ArrayList<Coin>) {
 
-    var coins : ArrayList<Coin> = coins
+class Wallet(var coins: ArrayList<Coin>) {
 
-    fun addCoin(coin: Coin) {
+    fun addAll(coinsList: ArrayList<Coin>) {
+        this.coins.addAll(coinsList)
+    }
+
+    fun add(coin: Coin) {
         this.coins.add(coin)
     }
+
 }

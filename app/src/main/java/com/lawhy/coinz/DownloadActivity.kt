@@ -104,7 +104,7 @@ class DownloadActivity : AppCompatActivity() {
         Log.d(tag, "cd: $currentDate")
 
         if (downloadDate != (currentDate)) {
-            Log.d(tag, "First time to download today")
+            Log.i(tag, "First time to download today")
             downloadDate = currentDate
             firestore?.collection("downloadDate")
                     ?.document(userID)
