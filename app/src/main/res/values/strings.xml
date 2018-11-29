@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Coinz</string>
+    <string name="coinz">Coinz</string>
     <string name="login">LOGIN</string>
     <string name="title_activity_login">Sign in</string>
 
@@ -40,5 +40,20 @@
     <string name="sign_up_long">Don\'t have an account? Sign up</string>
     <string name="sign_in_long">Already have an account? Sign in</string>
     <string name="prompt_confirm">Confirm your password here...</string>
+
+    <string name="icon">icon</string>
+    <string name="list_local">The list of Local Coins</string>
+    <string name="list_foreign">The list of Foreign Coins.</string>
+    <string name="zero_num">0.000</string>
+    <string name="peny">PENY</string>
+    <string name="quid">QUID</string>
+    <string name="dolr">DOLR</string>
+    <string name="shil">SHIL</string>
+    <string name="x_rate">X-Rate</string>
+    <string name="value">Value</string>
+    <string name="foreign">Foreign</string>
+    <string name="local">Local</string>
+    <string name="type">Type</string>
+    <string name="gold">GOLD</string>
 
 </resources>

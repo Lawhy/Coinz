@@ -88,11 +88,13 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
      * */
     private var firstTimeLaunch: Boolean = false
 
-
     private var coinsOnMap = ArrayList<Coin>() // Store the coins' (on the map) information
     private var collectedCoins = ArrayList<Coin>() // Store the *current* collected coins
                                                    // This means it is temporary.
     private var exchangeRates = HashMap<String, Any>() // Store today's exchange rates
+
+    // Initialise a map date variable to check if the date has changed
+    private var mapDate = MyUtils().getCurrentDate()
 
     /* Override Functions
      * Below are functions that are overridden
@@ -137,8 +139,9 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         alertDialog.setTitle("Are you sure!")
         alertDialog.setMessage("Do you want to return to the login page?")
         alertDialog.setPositiveButton("YES") { _,_ ->
+            mAuth?.signOut()
             val intent = Intent(this, AuthenticationActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            finish()
             startActivity(intent)}
         alertDialog.setNegativeButton("NO") {_,_ -> }
         alertDialog.show()
@@ -186,6 +189,21 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
             setCameraPosition(it)
         }
 
+        // Check if the current map is expired, if so, download the new one
+        if (mapDate != MyUtils().getCurrentDate()) {
+            Log.wtf(tag, "Map has been expired!")
+            val intent = Intent(this, DownloadActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP and Intent.FLAG_ACTIVITY_NEW_TASK)
+            val alertOfMapExpired = AlertDialog.Builder(this)
+            alertOfMapExpired.setTitle("Map has been expired!")
+            alertOfMapExpired.setMessage("Click yes and download the new one.")
+            alertOfMapExpired.setPositiveButton("YES") { _, _ ->
+                startActivity(intent)
+            }
+            mapDate = MyUtils().getCurrentDate()
+            alertOfMapExpired.show()
+        }
+
     }
 
     @SuppressWarnings("MissingPermission")
@@ -218,7 +236,6 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
     override fun onStop() {
         super.onStop()
-        updateWallet() // Update the Wallet Information onStop
         locationEngine?.removeLocationUpdates()
         locationLayerPlugin?.onStop()
         mapView.onStop()
@@ -404,6 +421,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
             coinsOnMap.remove(nearestCoin)
             map.removeMarker(marker)
             updateCoinzMap(nearestCoin)
+            updateWallet(nearestCoin)
             Toast.makeText(this, "Successfully collect a ${nearestCoin.currency}!", Toast.LENGTH_SHORT).show()
             Log.i(tag, "${collectedCoins.size} collected!")
             Log.i(tag, "${coinsOnMap.size} remaining!")
@@ -469,41 +487,32 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                     ?.document(userID)?.set(mapOf())
                     ?.addOnSuccessListener { Toast.makeText(this, "It's $day now! Unused Coins have been expired", Toast.LENGTH_SHORT).show() }
                     ?.addOnFailureListener { Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show() }
-        } else {
-            firestore?.collection("coins")
-                     ?.document(userID)
-                     ?.get()
-                     ?.addOnSuccessListener {
-                         val data = it.data
-                         if (data == null || data.isEmpty()) {
-                             Log.wtf(walletTag, "Really weird! Data of coins cannot be null or empty! Check Database!")
-                         } else {
-                             simpleIndex = it.data?.size!!  // Use simple ID, i.e. 0,1,2,...
-                         }
-                     }
         }
-
         firstTimeLaunch = false // set this boolean to false to prevent overlapped renewal
     }
 
-    private fun updateWallet() {
+    private fun updateWallet(coin: Coin) {
 
-        for (coin in collectedCoins) {
-            val coinMap = HashMap<String, Any>()
-            coinMap["id"] = coin.id
-            coinMap["currency"] = coin.currency
-            coinMap["value"] = coin.value
+        val coinMap = HashMap<String, Any>()
+        coinMap["id"] = coin.id
+        coinMap["currency"] = coin.currency
+        coinMap["value"] = coin.value
 
-            firestore?.collection("coins")
-                    ?.document(userID)
-                    ?.update(mapOf("$simpleIndex" to coinMap))
-                    ?.addOnSuccessListener {
-                        Log.i(walletTag, "${simpleIndex}th coin has been added")
-                    }
-            simpleIndex += 1
-        }
+        firestore?.collection("coins")
+                ?.document(userID)
+                ?.get()
+                ?.addOnSuccessListener {
+                    val data = it.data
+                    simpleIndex = if (data.isNullOrEmpty()) 0
+                                  else data.size
+                    firestore?.collection("coins")
+                            ?.document(userID)
+                            ?.update(mapOf("$simpleIndex" to coinMap))
+                            ?.addOnSuccessListener {
+                                Log.i(walletTag, "${simpleIndex}th coin has been added")
+                            }
+                }
 
-        collectedCoins = ArrayList() // empty the temporary collectedCoins list
     }
 
     private fun mySetOnClick() {

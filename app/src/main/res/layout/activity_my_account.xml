@@ -2,8 +2,397 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_account_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/main"
     tools:context=".MyAccountActivity">
+
+    <TableLayout
+        android:id="@+id/tableLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TableRow>
+
+            <ImageView
+                android:contentDescription="@string/icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_dark"
+                android:gravity="center"
+                app:srcCompat="@drawable/gold" />
+
+            <TextView
+                android:id="@+id/goldNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_dark"
+                android:gravity="center"
+                android:text="@string/zero_num"
+                app:srcCompat="@drawable/gold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_dark"
+                android:gravity="center"
+                android:text="@string/gold"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/type"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/local"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/foreign"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/value"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/x_rate"
+                android:textStyle="bold" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/shil"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/localSHIL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero" />
+
+            <TextView
+                android:id="@+id/foreignSHIL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero" />
+
+            <TextView
+                android:id="@+id/valSHIL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero_num" />
+
+            <TextView
+                android:id="@+id/xrSHIL"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero_num" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/dolr"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/localDOLR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero" />
+
+            <TextView
+                android:id="@+id/foreignDOLR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero" />
+
+            <TextView
+                android:id="@+id/valDOLR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero_num" />
+
+            <TextView
+                android:id="@+id/xrDOLR"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero_num" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/quid"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/localQUID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero" />
+
+            <TextView
+                android:id="@+id/foreignQUID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero" />
+
+            <TextView
+                android:id="@+id/valQUID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero_num" />
+
+            <TextView
+                android:id="@+id/xrQUID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero_num" />
+        </TableRow>
+
+        <TableRow>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/peny"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/localPENY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero" />
+
+            <TextView
+                android:id="@+id/foreignPENY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero" />
+
+            <TextView
+                android:id="@+id/valPENY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero_num" />
+
+            <TextView
+                android:id="@+id/xrPENY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/zero_num" />
+        </TableRow>
+
+    </TableLayout>
+
+    <TextView
+        android:id="@+id/dayOfWeek"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_weight="2"
+        android:background="@android:color/holo_orange_dark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableLayout" />
+
+    <TextView
+        android:id="@+id/BankNumber"
+        android:layout_width="match_parent"
+        android:layout_height="21dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_weight="2"
+        android:background="@android:color/holo_orange_dark"
+        app:layout_constraintBottom_toTopOf="@+id/localScroll"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dayOfWeek"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ScrollView
+        android:id="@+id/localScroll"
+        android:layout_width="0dp"
+        android:layout_height="170dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/dayOfWeek">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/list_local" />
+
+            <TableLayout
+                android:id="@+id/coinsList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+            </TableLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <ScrollView
+        android:id="@+id/foreignScroll"
+        android:layout_width="0dp"
+        android:layout_height="160dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/localScroll">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/holo_orange_light"
+                android:gravity="center"
+                android:text="@string/list_foreign" />
+
+            <TableLayout
+                android:id="@+id/foreignCoinsList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+            </TableLayout>
+        </LinearLayout>
+    </ScrollView>
+
 
 </android.support.constraint.ConstraintLayout>

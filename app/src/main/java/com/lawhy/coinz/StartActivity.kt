@@ -14,6 +14,7 @@ class StartActivity : AppCompatActivity() {
         setContentView(R.layout.activity_start)
 
         floatingActionButton_login.setOnClickListener {
+            finish()
             startActivity(Intent(this, AuthenticationActivity::class.java))
         }
 

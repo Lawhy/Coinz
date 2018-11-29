@@ -48,10 +48,11 @@ class DataActivity : AppCompatActivity() {
         super.onStart()
 
         // New intent with the map (either fresh downloaded or obtained from firestore)
-        val intent = Intent(this, MapActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        // This is important for valid renewal of local wallet, i.e. remove expired coins
-        intent.putExtra("firstLaunchToday", firstDownloadToday)
+        val intent = Intent(this, MapActivity::class.java).apply {
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            // This is important for valid renewal of local wallet, i.e. remove expired coins
+            putExtra("firstLaunchToday", firstDownloadToday)
+        }
 
         if(firstDownloadToday) {
             mapToday = DownloadActivity.DownloadCompleteRunner.result
@@ -76,6 +77,7 @@ class DataActivity : AppCompatActivity() {
 
             // Go to MapActivity with the wanted jsonString
             intent.putExtra("mapToday", mapToday)
+            finish()
             startActivity(intent)
 
         } else {
@@ -111,6 +113,7 @@ class DataActivity : AppCompatActivity() {
                             mapToday = data["mapToday"].toString().trim()
                             // Go to MapActivity with the wanted jsonString
                             intent.putExtra("mapToday", mapToday)
+                            finish()
                             startActivity(intent)
                         }
                     }

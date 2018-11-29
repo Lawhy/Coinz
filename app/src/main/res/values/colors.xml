@@ -8,6 +8,7 @@
     <color name="thirtyBlack">#00000000</color>
     <color name="customBlack1">#2e2d2e</color>
     <color name="trans_white">#96ffffff</color>
+    <color name="pinky">#ff5d5e</color>
     
     //mapbox colors
     <color name="mapboxWhite">#ffffff</color>

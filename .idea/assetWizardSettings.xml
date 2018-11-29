@@ -46,7 +46,7 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\close.png" />
+                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\Hopstarter-Soft-Scraps-Button-Blank-Blue.ico" />
                                       <entry key="outputName" value="ic_close" />
                                     </map>
                                   </option>
@@ -83,15 +83,38 @@
                                           </PersistentState>
                                         </value>
                                       </entry>
+                                      <entry key="text">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="paddingPercent" value="45" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
+                                      <entry key="textAsset">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="text" value="Bank" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                     </map>
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="assetType" value="IMAGE" />
-                                      <entry key="backgroundColor" value="ff842b" />
+                                      <entry key="assetType" value="TEXT" />
+                                      <entry key="backgroundColor" value="aeccfe" />
                                       <entry key="cropped" value="true" />
-                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\treasure.png" />
-                                      <entry key="outputName" value="ic_treasure_square" />
+                                      <entry key="iconShape" value="HRECT" />
+                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\Hopstarter-Soft-Scraps-Button-Blank-Blue.ico" />
+                                      <entry key="outputName" value="ic_bank_btn" />
                                     </map>
                                   </option>
                                 </PersistentState>

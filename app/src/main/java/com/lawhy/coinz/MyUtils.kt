@@ -29,6 +29,15 @@ class MyUtils {
         return currentDate.trim()
     }
 
+    fun getCurrentDateNoDash(): String {
+        val current = LocalDateTime.now()
+        val formatter =  DateTimeFormatter.ofPattern("yyyyMMdd")
+        val currentDate = current.format(formatter)
+        Log.i("CurrentDate", currentDate)
+        return currentDate.trim()
+
+    }
+
 
     fun symbolDrawable(context: Context, symbol: Int): Drawable?{
         var icNumber : Drawable? = null

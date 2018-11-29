@@ -1,7 +1,7 @@
 package com.lawhy.coinz
 
 
-class Wallet(var coins: ArrayList<Coin>) {
+class Wallet(val coins: ArrayList<Coin>, val foreigncoins: ArrayList<Coin>) {
 
     fun addAll(coinsList: ArrayList<Coin>) {
         this.coins.addAll(coinsList)
@@ -9,6 +9,10 @@ class Wallet(var coins: ArrayList<Coin>) {
 
     fun add(coin: Coin) {
         this.coins.add(coin)
+    }
+
+    fun addForeign(foreigncoin: Coin) {
+        this.foreigncoins.add(foreigncoin)
     }
 
 }

@@ -29,6 +29,11 @@ class AuthenticationActivity : AppCompatActivity(){
         mySetOnClick()
     }
 
+    override fun onBackPressed() {
+        finishAndRemoveTask()
+        startActivity(Intent(this, StartActivity::class.java))
+    }
+
     private fun mySetOnClick(){
 
         // SignInBtn
@@ -41,7 +46,9 @@ class AuthenticationActivity : AppCompatActivity(){
 
         // CloseBtn
         val closeBtn: ImageButton = findViewById(R.id.closeAutBtn)
-        closeBtn.setOnClickListener { startActivity(Intent(this, StartActivity::class.java)) }
+        closeBtn.setOnClickListener {
+            finish()
+            startActivity(Intent(this, StartActivity::class.java)) }
     }
 
     private fun userLoginIn() {
@@ -56,7 +63,7 @@ class AuthenticationActivity : AppCompatActivity(){
             if(task.isSuccessful){
                 Log.d(tag, "Successfully log in!")
                 val intent = Intent(this, DownloadActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                finish()
                 startActivity(intent)
             } else {
                 Toast.makeText(this, task.exception?.message,

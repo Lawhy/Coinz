@@ -46,13 +46,12 @@ class DownloadActivity : AppCompatActivity() {
                 .build()
         firestore?.firestoreSettings = settings
 
-        currentDate = MyUtils().getCurrentDate()
-        downloadDate = ""
-
     }
 
     override fun onStart() {
         super.onStart()
+        currentDate = MyUtils().getCurrentDate()
+        downloadDate = ""
         downloadIfFirst() // download the map if it is the first time today
     }
 
@@ -84,15 +83,17 @@ class DownloadActivity : AppCompatActivity() {
                     }
                     checkFirstDownloadToday()
                     // Customize an intent with extra information indicating first download or not
-                    val intent = Intent(this, DataActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    intent.putExtra("firstDownloadToday", firstDownloadToday)
+                    val intent = Intent(this, DataActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        putExtra("firstDownloadToday", firstDownloadToday)
+                    }
                     if(firstDownloadToday) {
                         // Download the map today and initialize everything
                         DownloadFileTask(DownloadCompleteRunner, intent)
                                 .execute("http://homepages.inf.ed.ac.uk/stg/coinz/$currentDate/coinzmap.geojson")
                     } else {
                         // Restore data from firestore
+                        finish()
                         startActivity(intent)
                     }
                 }

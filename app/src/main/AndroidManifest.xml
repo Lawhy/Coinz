@@ -13,9 +13,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
-        android:allowBackup="true"
         android:icon="@mipmap/ic_treasure_square"
-        android:label="@string/app_name"
+        android:label="@string/coinz"
         android:roundIcon="@mipmap/ic_treasure"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
@@ -32,7 +31,7 @@
         <activity android:name=".ChatActivity" />
         <activity android:name=".DataActivity" />
         <activity android:name=".DownloadActivity" />
-        <activity android:name=".MyAccountActivity"></activity>
+        <activity android:name=".MyAccountActivity" />
     </application>
 
 </manifest>
