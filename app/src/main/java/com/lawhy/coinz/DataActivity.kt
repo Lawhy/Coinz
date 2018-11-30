@@ -17,6 +17,7 @@ class DataActivity : AppCompatActivity() {
     private var user: FirebaseUser? = null
     private var firestore: FirebaseFirestore? = null
     private lateinit var userID: String
+    private lateinit var userEmail: String
 
     private val tag = "DataActivity"
 
@@ -32,6 +33,7 @@ class DataActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
         user = mAuth?.currentUser
         userID = user!!.uid
+        userEmail = user!!.email.orEmpty()
         firestore = FirebaseFirestore.getInstance()
         val settings = FirebaseFirestoreSettings.Builder()
                 .setTimestampsInSnapshotsEnabled(true)
@@ -64,7 +66,7 @@ class DataActivity : AppCompatActivity() {
 
             // Replace the mapToday to the latest one
             firestore?.collection("maps")
-                    ?.document(userID)
+                    ?.document(userEmail)
                     ?.set(mapOf("mapToday" to mapToday))
                     ?.addOnSuccessListener {
                         Log.d(tag, "Map today has been refreshed!")
@@ -84,7 +86,7 @@ class DataActivity : AppCompatActivity() {
 
             // Obtain the modified mapToday(jsonString) from firestore
             firestore?.collection("maps")
-                    ?.document(userID)?.get()
+                    ?.document(userEmail)?.get()
                     ?.addOnSuccessListener { snapshot ->
                         val data = snapshot.data
                         if (data.isNullOrEmpty()) {
@@ -92,7 +94,7 @@ class DataActivity : AppCompatActivity() {
                             // Serious Error will happen if downloadDate has been updated whereas Map is not presented
                             // In this case, remove the downloadDate and let user try again
                             firestore?.collection("downloadDate")
-                                    ?.document(userID)?.set(mapOf())
+                                    ?.document(userEmail)?.set(mapOf())
                                     ?.addOnSuccessListener {
                                         val alertDialog = AlertDialog.Builder(this)
                                         alertDialog.setTitle("Data is incorrect!")

@@ -22,6 +22,7 @@ class DownloadActivity : AppCompatActivity() {
     private var user: FirebaseUser? = null
     private var firestore: FirebaseFirestore? = null
     private lateinit var userID: String
+    private lateinit var userEmail: String
 
     private val tag = "DownloadActivity"
 
@@ -40,6 +41,7 @@ class DownloadActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
         user = mAuth?.currentUser
         userID = user!!.uid
+        userEmail = user!!.email.orEmpty()
         firestore = FirebaseFirestore.getInstance()
         val settings = FirebaseFirestoreSettings.Builder()
                 .setTimestampsInSnapshotsEnabled(true)
@@ -71,15 +73,18 @@ class DownloadActivity : AppCompatActivity() {
     // read the download date from firestore, empty string if there is none
     private fun downloadIfFirst(){
 
-        Log.d(tag, "Current user ID: $userID")
-        firestore?.collection("downloadDate")
-                ?.document(userID)?.get()
+        Log.d(tag, "Current user email: $userEmail")
+        firestore?.collection("pool")
+                ?.document("downloadDate")?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if (data == null) {
-                        Log.d(tag, "First time to download anything!")
+                    if (data.isNullOrEmpty()) {
+                        Log.d(tag, "No downloadDate data.")
+                        firestore?.collection("pool")
+                                ?.document("downloadDate")
+                                ?.set(mapOf())
                     } else {
-                        downloadDate = data["downloadDate"].toString().trim()
+                        downloadDate = data[userID].toString().trim()
                     }
                     checkFirstDownloadToday()
                     // Customize an intent with extra information indicating first download or not
@@ -107,12 +112,9 @@ class DownloadActivity : AppCompatActivity() {
         if (downloadDate != (currentDate)) {
             Log.i(tag, "First time to download today")
             downloadDate = currentDate
-            firestore?.collection("downloadDate")
-                    ?.document(userID)
-                    ?.set(
-                            mapOf(
-                                    "downloadDate" to downloadDate
-                            ))
+            firestore?.collection("pool")
+                    ?.document("downloadDate")
+                    ?.update(mapOf(userID to downloadDate))
                     ?.addOnSuccessListener {
                         Log.d("[DownloadDateUpdate]", downloadDate)
                     }

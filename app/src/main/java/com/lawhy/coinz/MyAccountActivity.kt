@@ -65,6 +65,7 @@ class MyAccountActivity : AppCompatActivity() {
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private lateinit var userID: String
+    private lateinit var userEmail: String
     private var firestore: FirebaseFirestore? = null
 
     private val tag = "MyAccountActivity"
@@ -79,6 +80,7 @@ class MyAccountActivity : AppCompatActivity() {
         mAuth = FirebaseAuth.getInstance()
         user = mAuth?.currentUser
         userID = user!!.uid
+        userEmail = user!!.email.orEmpty()
         firestore = FirebaseFirestore.getInstance()
         val settings = FirebaseFirestoreSettings.Builder()
                 .setTimestampsInSnapshotsEnabled(true)
@@ -97,6 +99,7 @@ class MyAccountActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
+        updateBankedNumber()
         updateGoldStat()
     }
 
@@ -140,27 +143,31 @@ class MyAccountActivity : AppCompatActivity() {
 
     private fun setBankedNumber() {
 
-        firestore?.collection("bankedNumber")
-                ?.document(userID)
+        firestore?.collection("gold")
+                ?.document(userEmail)
                 ?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
                     if (data.isNullOrEmpty()) {
-                        Log.i(tag,"No banked number information.")
-                        firestore?.collection("bankedNumber")
-                                ?.document(userID)
-                                ?.set(mapOf("num" to 0))
+                        Log.i(tag,"No gold/bank number information.")
+                        val originalMap = HashMap<String, Any>()
+                        originalMap["goldNumber"] = 0.000
+                        originalMap["bankedNumber"] = 0
+                        firestore?.collection("gold")
+                                ?.document(userEmail)
+                                ?.set(originalMap)
 
                     } else {
                         if(mapDate != MyUtils().getCurrentDate()) {
                             Log.i(tag, "Renew banked number for a new day!")
                             mapDate = MyUtils().getCurrentDate()
                             bankedNum = 0
-                            firestore?.collection("bankedNumber")
-                                    ?.document(userID)
-                                    ?.set(mapOf("num" to 0))
+                            firestore?.collection("gold")
+                                    ?.document(userEmail)
+                                    ?.update(mapOf("bankedNumber" to 0))
                         } else {
-                            bankedNum = data["num"].toString().toInt()
+                            bankedNum = if (data.keys.contains("bankedNumber"))
+                            { data["bankedNumber"].toString().toInt() } else { 0 }
                             Log.i(tag, "The banked coin number is $bankedNum")
                         }
                     }
@@ -172,9 +179,9 @@ class MyAccountActivity : AppCompatActivity() {
 
         bankNumberView.text = "You have banked $bankedNum coins today (Limit: 25)."
 
-        firestore?.collection("bankedNumber")
-                ?.document(userID)
-                ?.update(mapOf("num" to bankedNum))
+        firestore?.collection("gold")
+                ?.document(userEmail)
+                ?.update(mapOf("bankedNumber" to bankedNum))
                 ?.addOnSuccessListener{ Log.i(tag, "Banked Coin Number has been uploaded to Database.")}
                 ?.addOnFailureListener { Log.wtf(tag, "Banked Coin Number cannot be uploaded!") }
 
@@ -184,15 +191,18 @@ class MyAccountActivity : AppCompatActivity() {
 
         // Retrieve stored Gold Number from Fire-store
         firestore?.collection("gold")
-                ?.document(userID)
+                ?.document(userEmail)
                 ?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
                     if (data.isNullOrEmpty()) {
                         Log.i(tag, "No Gold Info in the bank account.")
+                        val originalMap = HashMap<String, Any>()
+                        originalMap["goldNumber"] = 0.000
+                        originalMap["bankedNumber"] = 0
                         firestore?.collection("gold")
-                                ?.document(userID)
-                                ?.set(mapOf("goldNumber" to 0.000))
+                                ?.document(userEmail)
+                                ?.set(originalMap)
                                 ?.addOnSuccessListener { Log.i(tag, "Init Gold Number in account.") }
                                 ?.addOnFailureListener { Log.wtf(tag, "Gold Number cannot be initialised!") }
                     } else  {
@@ -210,8 +220,8 @@ class MyAccountActivity : AppCompatActivity() {
 
         // Upload gold number to fire-store
         firestore?.collection("gold")
-                ?.document(userID)
-                ?.set(mapOf("goldNumber" to goldNumber))
+                ?.document(userEmail)
+                ?.update(mapOf("goldNumber" to goldNumber))
                 ?.addOnSuccessListener { Log.i(tag, "Gold Number has been updated!")}
                 ?.addOnFailureListener { Log.wtf(tag, "Gold Number cannot be updated!") }
 
@@ -225,7 +235,7 @@ class MyAccountActivity : AppCompatActivity() {
 
         // Retrieve stored coins information from Fire-store
         firestore?.collection("coins")
-                ?.document(userID)
+                ?.document(userEmail)
                 ?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
@@ -233,7 +243,7 @@ class MyAccountActivity : AppCompatActivity() {
                         Log.i(tag, "No coins in the wallet.")
                     } else {
                         for (coinMap in data) {
-                            Log.i("[userID:$userID]", "Local Wallet is initialised.")
+                            Log.i("[userEmail:$userEmail]", "Local Wallet is initialised.")
                             val index = coinMap.key as String
                             val properties = coinMap.value as HashMap<*, *>
                             val id = properties["id"] as String
@@ -399,7 +409,7 @@ class MyAccountActivity : AppCompatActivity() {
             wallet.coins.remove(coinToBank)
             // Replacing the online wallet by local wallet
             firestore?.collection("coins")
-                    ?.document(userID)
+                    ?.document(userEmail)
                     ?.set(mapOf()) // First remove everything
                     ?.addOnSuccessListener {
                         for (i in 0 until wallet.coins.size) {
@@ -410,7 +420,7 @@ class MyAccountActivity : AppCompatActivity() {
                             coinMap["value"] = coin.value
 
                             firestore?.collection("coins")
-                                    ?.document(userID)
+                                    ?.document(userEmail)
                                     ?.update(mapOf("$i" to coinMap))
                                     ?.addOnSuccessListener {
                                         Log.i(tag, "${i}th coin has been renewed")

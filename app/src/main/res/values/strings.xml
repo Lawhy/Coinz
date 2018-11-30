@@ -39,7 +39,7 @@
     <string name="zero">0</string>
     <string name="sign_up_long">Don\'t have an account? Sign up</string>
     <string name="sign_in_long">Already have an account? Sign in</string>
-    <string name="prompt_confirm">Confirm your password here...</string>
+    <string name="prompt_confirm">Confirm your password here…</string>
 
     <string name="icon">icon</string>
     <string name="list_local">The list of Local Coins</string>
@@ -55,5 +55,15 @@
     <string name="local">Local</string>
     <string name="type">Type</string>
     <string name="gold">GOLD</string>
+    <string name="worldwide">(worldwide)</string>
+    <string name="test_test_com">(test@test.com)</string>
+    <string name="lawrence">Lawrence</string>
+    <string name="rank">Rank:</string>
+    <string name="name">Name</string>
+    <string name="email">email</string>
+    <string name="user_email">Email</string>
+    <string name="user_rank">Rank</string>
+    <string name="type_here">Type here…</string>
+    <string name="confirm">confirm</string>
 
 </resources>

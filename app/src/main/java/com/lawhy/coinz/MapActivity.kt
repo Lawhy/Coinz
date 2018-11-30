@@ -67,6 +67,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private lateinit var userID: String
+    private lateinit var userEmail: String
     private var firestore: FirebaseFirestore? = null
 
     // Tags
@@ -119,6 +120,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         mAuth = FirebaseAuth.getInstance()
         user = mAuth?.currentUser
         userID = user!!.uid
+        userEmail = user!!.email.orEmpty()
         firestore = FirebaseFirestore.getInstance()
         val settings = FirebaseFirestoreSettings.Builder()
                 .setTimestampsInSnapshotsEnabled(true)
@@ -461,7 +463,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
         // upload the modified map to firestore
         firestore?.collection("maps")
-                ?.document(userID)
+                ?.document(userEmail)
                 ?.set(mapOf("mapToday" to  mapToday))
                 ?.addOnSuccessListener {
                     Log.d(tag, "Map Today has been modified!")
@@ -484,7 +486,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
         if (day == "MONDAY" && firstTimeLaunch) {
             firestore?.collection("coins")
-                    ?.document(userID)?.set(mapOf())
+                    ?.document(userEmail)?.set(mapOf())
                     ?.addOnSuccessListener { Toast.makeText(this, "It's $day now! Unused Coins have been expired", Toast.LENGTH_SHORT).show() }
                     ?.addOnFailureListener { Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show() }
         }
@@ -499,14 +501,20 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         coinMap["value"] = coin.value
 
         firestore?.collection("coins")
-                ?.document(userID)
+                ?.document(userEmail)
                 ?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    simpleIndex = if (data.isNullOrEmpty()) 0
-                                  else data.size
+                    if (data.isNullOrEmpty()) {
+                        simpleIndex = 0
+                        firestore?.collection("coins")
+                                ?.document(userEmail)
+                                ?.set(mapOf())
+                    } else {
+                        simpleIndex = data.size
+                    }
                     firestore?.collection("coins")
-                            ?.document(userID)
+                            ?.document(userEmail)
                             ?.update(mapOf("$simpleIndex" to coinMap))
                             ?.addOnSuccessListener {
                                 Log.i(walletTag, "${simpleIndex}th coin has been added")
@@ -576,6 +584,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         }
         fabFriendList.setOnClickListener {
             Log.i(tag, "onClick: fab -> FriendList")
+            startActivity(Intent(this, SocialActivity::class.java))
             closeMenu()
         }
         fabTrade.setOnClickListener {
