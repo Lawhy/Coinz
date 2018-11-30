@@ -2,7 +2,6 @@ package com.lawhy.coinz
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -15,19 +14,6 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 
 class SocialActivity : AppCompatActivity() {
-
-    /** In this activity, data mostly saved in the pool collection which has different structure
-    * with other collections. The point is to gather small data together such as (3 documents)
-    *  1. customized nick name
-    *  2. download date
-    *  3. user email
-    * Here each document uses UserID as a key, whereas in other collections, the userEmails are used
-    * for document names and descriptive strings are used for keys.
-    * The pool collection looks like:
-    *     pool/names/{userID -> nickname}
-    * whereas others look like:
-    *     maps/userEmail/{"mapToday" -> Coinz Map}
-    * */
 
     private lateinit var userNickNameView: TextView
     private lateinit var userEmailView: TextView
@@ -75,7 +61,6 @@ class SocialActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         setDataMaps()
-
     }
 
 
@@ -207,6 +192,18 @@ class SocialActivity : AppCompatActivity() {
                 ?.addOnFailureListener { Log.wtf(tag, it.message) }
 
     }
+
+    /* To display the friend list with (rank, name, gold),
+    * it needs to load the necessary data from the database.
+    * The strategy here is:
+    * 1. Retrieve a list of friends' emails
+    * 2. For each friend's email:
+    *    2.1 update the nameMap (storing nicknames of friends)
+    *    2.2 after nameMap is updated, update the goldMap (storing gold numbers of friends)
+    * 3. After last gold number is added to goldMap, update the rankedEmails (storing friends' emails according to ranking of wealth)
+    * 4. Display the friend list accordingly.
+    * The four functions below are strongly related to each other.
+    * */
 
     private fun setDataMaps() {
 

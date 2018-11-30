@@ -94,7 +94,7 @@ class DownloadActivity : AppCompatActivity() {
                     }
                     if(firstDownloadToday) {
                         // Download the map today and initialize everything
-                        DownloadFileTask(DownloadCompleteRunner, intent)
+                        this.DownloadFileTask(DownloadCompleteRunner, intent)
                                 .execute("http://homepages.inf.ed.ac.uk/stg/coinz/$currentDate/coinzmap.geojson")
                     } else {
                         // Restore data from firestore

@@ -19,7 +19,7 @@ class MyAccountActivity : AppCompatActivity() {
     private lateinit var wallet: Wallet
     private var goldNumber: Double = 0.000
     private var bankedNum = 0
-    private val BANK_LIMIT = 25
+    private val bankLIMIT = 25
     private var mapDate = MyUtils().getCurrentDate()
 
     /* The statistics summary of Gold and Coins
@@ -57,8 +57,9 @@ class MyAccountActivity : AppCompatActivity() {
 
     // Local/Foreign coins list views
     private lateinit var coinsListView: TableLayout
+    private lateinit var foreignListView: TableLayout
 
-    // Display bank number
+    // Display banked number of coins today
     private lateinit var bankNumberView: TextView
 
     // Firebase
@@ -135,8 +136,11 @@ class MyAccountActivity : AppCompatActivity() {
         val dayText = "${LocalDateTime.now().dayOfWeek} now, expiration on next MONDAY."
         dayOfWeekView.text = dayText
 
+        // local/foreign coins list
         coinsListView = findViewById(R.id.coinsList)
+        foreignListView = findViewById(R.id.foreignCoinsList)
 
+        // banked  coin number today
         bankNumberView = findViewById(R.id.BankNumber)
 
     }
@@ -403,7 +407,8 @@ class MyAccountActivity : AppCompatActivity() {
 
     private fun bankCoin(coinToBank: Coin): Double {
 
-        if(bankedNum <= BANK_LIMIT) {
+        // Bank only happens before exceeding the limit of 25 coins
+        if(bankedNum <= bankLIMIT) {
             val xr = exchangeRates[coinToBank.currency].toString().toDouble()
             val value = coinToBank.value
             wallet.coins.remove(coinToBank)
@@ -418,7 +423,7 @@ class MyAccountActivity : AppCompatActivity() {
                             coinMap["id"] = coin.id
                             coinMap["currency"] = coin.currency
                             coinMap["value"] = coin.value
-
+                            // Upload each coin in the wallet to the database
                             firestore?.collection("coins")
                                     ?.document(userEmail)
                                     ?.update(mapOf("$i" to coinMap))
@@ -434,17 +439,17 @@ class MyAccountActivity : AppCompatActivity() {
             return xr * value
         } else {
             Log.i(tag, "No more banking today!")
-            Toast.makeText(this, "You have already banked $BANK_LIMIT coins today!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "You have already banked $bankLIMIT coins today!", Toast.LENGTH_SHORT).show()
             return 0.000
         }
 
     }
 
-    private fun bankForeignCoin(id: Int, penalty: Double = 0.5): Double {
-        val foreignCoinToBank = wallet.foreigncoins[id]
-        val xr = exchangeRates[foreignCoinToBank.currency].toString().toDouble()
-        val value = foreignCoinToBank.value
-        return xr * value * penalty // number of gold gained with penalty
-    }
+//    private fun bankForeignCoin(id: Int, penalty: Double = 0.5): Double {
+//        val foreignCoinToBank = wallet.foreignCoins[id]
+//        val xr = exchangeRates[foreignCoinToBank.currency].toString().toDouble()
+//        val value = foreignCoinToBank.value
+//        return xr * value * penalty // number of gold gained with penalty
+//    }
 
 }

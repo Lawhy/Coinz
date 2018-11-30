@@ -7,7 +7,6 @@ import android.location.Location
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.support.constraint.ConstraintLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AlertDialog
 import android.util.Log
@@ -15,7 +14,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.animation.OvershootInterpolator
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
