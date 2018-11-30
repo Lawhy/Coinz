@@ -396,7 +396,7 @@ class MyAccountActivity : AppCompatActivity() {
             }
 
             sendBtn.setOnClickListener {
-                val sentCoin = wallet.coins[i]
+               // val sentCoin = wallet.coins[i]
             }
         }
     }

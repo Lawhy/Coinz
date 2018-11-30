@@ -13,11 +13,11 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:allowBackup="false"
         android:icon="@mipmap/ic_treasure_square"
         android:label="@string/coinz"
         android:roundIcon="@mipmap/ic_treasure"
         android:supportsRtl="true"
-        android:allowBackup="false"
         android:theme="@style/AppTheme">
         <activity android:name=".StartActivity">
             <intent-filter>
@@ -30,11 +30,11 @@
         <activity android:name=".MapActivity" />
         <activity android:name=".AuthenticationActivity" />
         <activity android:name=".SignUpActivity" />
-        <activity android:name=".ChatActivity" />
         <activity android:name=".DataActivity" />
         <activity android:name=".DownloadActivity" />
         <activity android:name=".MyAccountActivity" />
         <activity android:name=".SocialActivity" />
+        <activity android:name=".RequestActivity" />
     </application>
 
 </manifest>

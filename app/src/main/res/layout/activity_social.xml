@@ -9,18 +9,6 @@
 
 
     <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="36dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/worldwide"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userRank"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
         android:id="@+id/userEmail"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -53,7 +41,7 @@
         android:layout_marginEnd="60dp"
         android:layout_marginTop="28dp"
         android:text="@string/rank"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -74,7 +62,7 @@
         android:layout_height="112dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="140dp"
         android:background="@android:color/holo_orange_light"
         android:elevation="20dp"
         android:ems="10"
@@ -103,20 +91,52 @@
         android:id="@+id/scrollView2"
         android:layout_width="0dp"
         android:layout_height="417dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:isScrollContainer="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.657">
+        app:layout_constraintVertical_bias="0.664">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/holo_orange_dark"
+                    android:gravity="center"
+                    android:text="@string/user_rank" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"
+                    android:background="@android:color/holo_orange_dark"
+                    android:gravity="center"
+                    android:text="@string/name" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:background="@android:color/holo_orange_dark"
+                    android:gravity="center"
+                    android:text="@string/gold_short" />
+
+            </TableRow>
 
             <TableLayout
                 android:id="@+id/friendList"
@@ -125,30 +145,6 @@
                 tools:layout_editor_absoluteX="42dp"
                 tools:layout_editor_absoluteY="120dp">
 
-                <TableRow>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:gravity="center"
-                        android:text="@string/name" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="3"
-                        android:gravity="center"
-                        android:text="@string/user_email" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:gravity="center"
-                        android:text="@string/user_rank" />
-
-                </TableRow>
             </TableLayout>
         </LinearLayout>
     </ScrollView>

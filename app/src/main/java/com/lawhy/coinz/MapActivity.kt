@@ -7,12 +7,15 @@ import android.location.Location
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.support.constraint.ConstraintLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
+import android.view.View.GONE
 import android.view.animation.OvershootInterpolator
 import android.widget.Button
+import android.widget.EditText
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -59,6 +62,8 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     private lateinit var fabMyAccount: FloatingActionButton
     private lateinit var fabFriendList: FloatingActionButton
     private lateinit var fabTrade: FloatingActionButton
+    private lateinit var fabAddFriend: FloatingActionButton
+    private lateinit var fabHelpPage: FloatingActionButton
 
     private var locationEngine : LocationEngine? = null
     private var locationLayerPlugin: LocationLayerPlugin? = null
@@ -112,6 +117,8 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         fabMyAccount = findViewById(R.id.fab_myAccount)
         fabFriendList = findViewById(R.id.fab_friendList)
         fabTrade = findViewById(R.id.fab_trade)
+        fabAddFriend = findViewById(R.id.fab_addFriend)
+        fabHelpPage = findViewById(R.id.fab_helpPage)
 
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
@@ -559,13 +566,17 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     private fun initFabMenu(){
 
         // The three sub-buttons are invisible initially
-        fabMyAccount.visibility = View.GONE
-        fabFriendList.visibility = View.GONE
-        fabTrade.visibility = View.GONE
+        fabMyAccount.visibility = GONE
+        fabFriendList.visibility = GONE
+        fabTrade.visibility = GONE
+        fabAddFriend.visibility = GONE
+        fabHelpPage.visibility = GONE
         // Set alpha to 0f for animation effect latter
         fabMyAccount.alpha = 0f
         fabFriendList.alpha = 0f
         fabTrade.alpha = 0f
+        fabAddFriend.alpha = 0f
+        fabHelpPage.alpha = 0f
 
         fabMenu.setOnClickListener{
             Log.i(tag, "onClick: fab Menu")
@@ -584,11 +595,20 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         }
         fabFriendList.setOnClickListener {
             Log.i(tag, "onClick: fab -> FriendList")
-            startActivity(Intent(this, SocialActivity::class.java))
             closeMenu()
+            startActivity(Intent(this, SocialActivity::class.java))
         }
         fabTrade.setOnClickListener {
             Log.i(tag, "onClick: fab -> Trade")
+            closeMenu()
+        }
+        fabAddFriend.setOnClickListener {
+            Log.i(tag, "onClick: fab -> addFriend")
+            closeMenu()
+            startActivity(Intent(this, RequestActivity::class.java))
+        }
+        fabHelpPage.setOnClickListener {
+            Log.i(tag, "onClick: fab -> helpPage")
             closeMenu()
         }
 
@@ -604,13 +624,18 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 .setDuration(300)
                 .start()
 
+        fabMyAccount.visibility = View.VISIBLE
+        fabFriendList.visibility = View.VISIBLE
+        fabTrade.visibility = View.VISIBLE
+        fabAddFriend.visibility = View.VISIBLE
+        fabHelpPage.visibility = View.VISIBLE
+
         fabMyAccount.animate()
                 .translationY(0f)
                 .alpha(1f)
                 .setInterpolator(interpolator)
                 .setDuration(300)
                 .start()
-        fabMyAccount.visibility = View.VISIBLE
 
         fabFriendList.animate()
                 .translationY(0f)
@@ -618,7 +643,6 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 .setInterpolator(interpolator)
                 .setDuration(300)
                 .start()
-        fabFriendList.visibility = View.VISIBLE
 
         fabTrade.animate()
                 .translationY(0f)
@@ -626,7 +650,21 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 .setInterpolator(interpolator)
                 .setDuration(300)
                 .start()
-        fabTrade.visibility = View.VISIBLE
+
+        fabAddFriend.animate()
+                .translationY(0f)
+                .alpha(1f)
+                .setInterpolator(interpolator)
+                .setDuration(300)
+                .start()
+
+
+        fabHelpPage.animate()
+                .translationY(0f)
+                .alpha(1f)
+                .setInterpolator(interpolator)
+                .setDuration(300)
+                .start()
 
     }
 
@@ -661,10 +699,27 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 .setDuration(300)
                 .start()
 
-        fabMyAccount.visibility = View.GONE
-        fabFriendList.visibility = View.GONE
-        fabTrade.visibility = View.GONE
+        fabAddFriend.animate()
+                .translationY(translationY)
+                .alpha(0f)
+                .setInterpolator(interpolator)
+                .setDuration(300)
+                .start()
+
+        fabHelpPage.animate()
+                .translationY(translationY)
+                .alpha(0f)
+                .setInterpolator(interpolator)
+                .setDuration(300)
+                .start()
+
+        fabMyAccount.visibility = GONE
+        fabFriendList.visibility = GONE
+        fabTrade.visibility = GONE
+        fabAddFriend.visibility = GONE
+        fabHelpPage.visibility = GONE
     }
+
 
 }
 

@@ -4,10 +4,12 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 
@@ -41,8 +43,13 @@ class SocialActivity : AppCompatActivity() {
     private var user: FirebaseUser? = null
     private lateinit var userID: String
     private var firestore: FirebaseFirestore? = null
+    private var friendDocRef: DocumentReference? = null
 
     private val tag = "SocialActivity"
+    // Collections storing information that will be displayed
+    private val nameMap = HashMap<String, String>()
+    private val goldMap = HashMap<String, Double>()
+    private val rankedEmails = ArrayList<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,12 +66,16 @@ class SocialActivity : AppCompatActivity() {
                 .build()
         firestore?.firestoreSettings = settings
 
+        friendDocRef = firestore?.collection("friends")?.document(userEmail)
+
         initView()
         initPersonalInfo()
     }
 
     override fun onStart() {
         super.onStart()
+        setDataMaps()
+
     }
 
 
@@ -94,6 +105,14 @@ class SocialActivity : AppCompatActivity() {
             if(nickname == curname) {
                 editNameView.visibility = View.GONE
                 confirmNameBtn.visibility = View.GONE
+                return@setOnClickListener
+            }
+
+            // Reject nickname that is too long or too short
+            if(nickname.length > 15 || nickname.length < 3) {
+                editNameView.visibility = View.GONE
+                confirmNameBtn.visibility = View.GONE
+                Toast.makeText(this, "Please select nickname of length 3-15 characters.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -180,5 +199,129 @@ class SocialActivity : AppCompatActivity() {
                     Toast.makeText(this, "Fail to save nickname.", Toast.LENGTH_SHORT).show()
                 }
 
+        // Also store nicknames in a separate collection for displaying them in friend list
+        firestore?.collection("nicknames")
+                ?.document(userEmail)
+                ?.set(mapOf("name" to nickname))
+                ?.addOnSuccessListener { Log.i(tag, "Successfully change the nickname!") }
+                ?.addOnFailureListener { Log.wtf(tag, it.message) }
+
     }
+
+    private fun setDataMaps() {
+
+        friendDocRef?.get()?.addOnSuccessListener {
+            val friends = it.data?.values?.toList()
+            if (friends.isNullOrEmpty()){ Log.i(tag, "No friend at all.") }
+            else {
+                //Count the user him/herself as a friend
+                updateNameMap(userEmail)
+                updateGoldMap(userEmail)
+
+                for (i in 0 until friends.size) {
+                    val email = friends[i]
+                    Log.d(tag, "A friend $email")
+                    if(i == friends.size - 1) {
+                        updateNameMap(email.toString(), isLast = true)
+                    } else {
+                        updateNameMap(email.toString()) // nameMap will trigger update of goldMap
+                    }
+                }
+                Log.i(tag, "Data maps are constructed.")
+            }
+        }
+
+    }
+
+    private fun updateNameMap(email: String, isLast: Boolean=false) {
+
+        firestore?.collection("nicknames")
+                ?.document(email)
+                ?.get()
+                ?.addOnSuccessListener { n ->
+                    val nickname = n.data
+                    if(nickname.isNullOrEmpty()) {Log.i(tag, "No name at all.")}
+                    else {
+                        nameMap[email] = nickname["name"].toString()
+                        Log.d(tag, "Check NAME MAP: $nameMap")
+                        updateGoldMap(email, isLast) // goldMap will trigger update of rankList
+                    }
+                }?.addOnFailureListener { Log.wtf(tag, it.message) }
+
+    }
+
+    private fun updateGoldMap(email: String, isLast: Boolean=false) {
+
+        firestore?.collection("gold")
+                ?.document(email)
+                ?.get()
+                ?.addOnSuccessListener {
+                    val data = it.data
+                    if(data.isNullOrEmpty()) {Log.i(tag, "No Gold info at all.")}
+                    else {
+                        if(data["goldNumber"] != null) {
+                            goldMap[email] = data["goldNumber"].toString().toDouble()
+                        } else {
+                            goldMap[email] = 0.000
+                        }
+                        Log.d(tag, "Check GOLD MAP: $goldMap")
+                        if (isLast) {
+                            updateRankedEmails()
+                        }
+                    }
+                }?.addOnFailureListener { Log.wtf(tag, it.message) }
+    }
+
+    private fun updateRankedEmails() {
+        rankedEmails.clear()
+        rankedEmails.addAll(goldMap.toList().sortedBy { (_, value) -> value}.toMap().keys.toList().reversed())
+        Log.d(tag, "[Ranking!!!]: $rankedEmails")
+        displayFriendsByRank()
+    }
+
+    private fun displayFriendsByRank() {
+
+        userRankView.text = "Rank: ${rankedEmails.indexOf(userEmail) + 1}" // Set the user's rank.
+
+        // Set the friend list
+        friendListLayout.removeAllViews()
+        for (i in 0 until rankedEmails.size) {
+
+            // Get relevant data
+            val email = rankedEmails[i]
+            Log.d(tag, "[Rank $i] $email")
+            val gold = goldMap[email]
+            val nickname = nameMap[email]
+
+            // Construct view for each friend
+            val tr = TableRow(this)
+            tr.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
+
+            // Rank Displayed
+            val rankText = TextView(this)
+            rankText.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1F)
+            rankText.gravity = Gravity.CENTER
+            rankText.text = (i+1).toString()
+
+            // Name Displayed
+            val nameText = TextView(this)
+            nameText.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 3F)
+            nameText.gravity = Gravity.CENTER
+            nameText.text = nickname
+
+            // Gold Displayed
+            val goldText = TextView(this)
+            goldText.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 3F)
+            goldText.gravity = Gravity.CENTER
+            goldText.text = "%.3f".format(gold)
+
+            tr.addView(rankText)
+            tr.addView(nameText)
+            tr.addView(goldText)
+            friendListLayout.addView(tr)
+        }
+
+    }
+
+
 }
