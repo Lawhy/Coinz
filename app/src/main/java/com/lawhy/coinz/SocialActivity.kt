@@ -261,16 +261,23 @@ class SocialActivity : AppCompatActivity() {
                         } else {
                             goldMap[email] = 0.000
                         }
-                        Log.d(tag, "Check GOLD MAP: $goldMap")
                         if (isLast) {
+                            // Somehow the last assignment takes a while, so I have to add this line
+                            // waiting for full update of data maps.
+                            while(nameMap.size != goldMap.size) {
+                                Log.d(tag, "Waiting.")
+                            }
                             updateRankedEmails()
                         }
+                        Log.d(tag, "Check GOLD MAP: $goldMap")
                     }
                 }?.addOnFailureListener { Log.wtf(tag, it.message) }
     }
 
     private fun updateRankedEmails() {
         rankedEmails.clear()
+        Log.d(tag, "[Name!!!] $nameMap")
+        Log.d(tag, "[Gold!!!] $goldMap")
         rankedEmails.addAll(goldMap.toList().sortedBy { (_, value) -> value}.toMap().keys.toList().reversed())
         Log.d(tag, "[Ranking!!!]: $rankedEmails")
         displayFriendsByRank()
