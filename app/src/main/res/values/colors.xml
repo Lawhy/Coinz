@@ -9,6 +9,7 @@
     <color name="customBlack1">#2e2d2e</color>
     <color name="trans_white">#96ffffff</color>
     <color name="pinky">#ff5d5e</color>
+    <color name="transparent">#00F0F8FF</color>
     
     //mapbox colors
     <color name="mapboxWhite">#ffffff</color>

@@ -21,10 +21,11 @@ class AuthenticationActivity : AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authentication)
 
-        // Initialise everything
+        // Initialise Views
         emailText = findViewById(R.id.AutEmail)
         passwordText = findViewById(R.id.AutPassword)
         progressBar = findViewById(R.id.progressLogin)
+        // Fire-base components
         mAuth = FirebaseAuth.getInstance()
         mySetOnClick()
     }
@@ -62,6 +63,7 @@ class AuthenticationActivity : AppCompatActivity(){
             progressBar.visibility = View.GONE
             if(task.isSuccessful){
                 Log.d(tag, "Successfully log in!")
+                // Go to next activity for successful login
                 val intent = Intent(this, DownloadActivity::class.java)
                 finish()
                 startActivity(intent)

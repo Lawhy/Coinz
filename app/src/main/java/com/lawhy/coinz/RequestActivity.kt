@@ -16,17 +16,19 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 class RequestActivity : AppCompatActivity() {
 
-    /** The requests collection has document for each userEmail
-     * In each document, there exists two keys {friend, coin}
-     * data["friend"] = List of friend requests specified by emails
-     * data["coin"] = List of foreign coins sent to the userEmail
+    /** This activity deals with the friend requests in general:
+     * Send, Accept, Decline, Display the requests are the main functionality here.
+     * Fire-store data used here:
+     *   Collection: requests
+     *   Document: userEmail
+     *   Fields: index -> email from the request
      * */
 
     private lateinit var searchFriendView: EditText
     private lateinit var requestFriendBtn: Button
     private lateinit var friendReqsLayout: TableLayout
 
-    // Firebase
+    // Fire-base
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private lateinit var userID: String
@@ -47,7 +49,7 @@ class RequestActivity : AppCompatActivity() {
         requestFriendBtn = findViewById(R.id.requestFriendBtn)
         friendReqsLayout = findViewById(R.id.friendReqs)
 
-        // Firebase Initialization
+        // Fire-base Initialization
         mAuth = FirebaseAuth.getInstance()
         user = mAuth?.currentUser
         userID = user!!.uid
@@ -68,7 +70,6 @@ class RequestActivity : AppCompatActivity() {
         super.onStart()
         displayFriendRequests()
     }
-
 
 
     /* Send friend request strategy:
@@ -101,7 +102,7 @@ class RequestActivity : AppCompatActivity() {
                             for (id in data.keys) {
                                 val em = data[id]
                                 if (em == friendEmail) {
-                                    checkIsFriend(friendEmail)
+                                    checkIsFriendThenSend(friendEmail)
                                     Log.d(tag, "Found email in database.")
                                     return@addOnSuccessListener
                                 }
@@ -116,7 +117,7 @@ class RequestActivity : AppCompatActivity() {
 
     }
 
-    private fun checkIsFriend(friendEmail: String) {
+    private fun checkIsFriendThenSend(friendEmail: String) {
 
         friendDocRef?.get()?.addOnSuccessListener {
             var notFriend = true
@@ -143,6 +144,9 @@ class RequestActivity : AppCompatActivity() {
     }
 
     private fun sendFriendRequest(requestedEmail: String) {
+
+        // To send a request, we need to ensure that the requests collection of the target player is not empty,
+        // if it is empty user set() method, if not, user update() method.
 
         val friendRequestDoc = firestore?.collection("requests")?.document(requestedEmail)
         friendRequestDoc?.get()?.addOnSuccessListener {
@@ -187,6 +191,7 @@ class RequestActivity : AppCompatActivity() {
 
     }
 
+    // Use the modified email list to update friend requests view.
     private fun updateFriendRequestsView(emails: ArrayList<String>) {
 
         friendReqsLayout.removeAllViews()
@@ -281,6 +286,7 @@ class RequestActivity : AppCompatActivity() {
                 alertDialog.setTitle("Are you sure?")
                 alertDialog.setMessage("Decline the friend request from $em.")
                 alertDialog.setPositiveButton("YES"){ _,_ ->
+                    // Remove the request and update the online storage
                     emails.remove(em)
                     updateFriendRequests(emails)
                 }
@@ -290,7 +296,7 @@ class RequestActivity : AppCompatActivity() {
         }
     }
 
-
+    // Use the modified email list to update online storage.
     private fun updateFriendRequests(emails: ArrayList<String>) {
         requestDocRef?.set(mapOf())?.addOnSuccessListener {
             Log.d(tag, "Clean all the friend requests before update.")

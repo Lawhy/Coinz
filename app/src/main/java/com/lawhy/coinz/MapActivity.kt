@@ -507,25 +507,20 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         coinMap["currency"] = coin.currency
         coinMap["value"] = coin.value
 
-        firestore?.collection("coins")
-                ?.document(userEmail)
+        val coinsDocRef = firestore?.collection("coins")?.document(userEmail)
+        coinsDocRef
                 ?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
                     if (data.isNullOrEmpty()) {
                         simpleIndex = 0
-                        firestore?.collection("coins")
-                                ?.document(userEmail)
-                                ?.set(mapOf())
+                        coinsDocRef.set(mapOf())
                     } else {
                         simpleIndex = data.size
                     }
-                    firestore?.collection("coins")
-                            ?.document(userEmail)
-                            ?.update(mapOf("$simpleIndex" to coinMap))
-                            ?.addOnSuccessListener {
-                                Log.i(walletTag, "${simpleIndex}th coin has been added")
-                            }
+                    coinsDocRef
+                            .update(mapOf("$simpleIndex" to coinMap))
+                            .addOnSuccessListener { Log.i(walletTag, "${simpleIndex}th coin has been added") }
                 }
 
     }

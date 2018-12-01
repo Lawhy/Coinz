@@ -2,6 +2,7 @@ package com.lawhy.coinz
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -15,13 +16,12 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 class SocialActivity : AppCompatActivity() {
 
+    private lateinit var rankUpdateProgressBar: ProgressBar
     private lateinit var userNickNameView: TextView
     private lateinit var userEmailView: TextView
     private lateinit var userRankView: TextView
     private lateinit var friendListLayout: TableLayout
     private lateinit var editNameBtn: Button
-    private lateinit var editNameView: EditText
-    private lateinit var confirmNameBtn: Button
     private lateinit var userEmail: String
 
     // Firebase
@@ -60,6 +60,7 @@ class SocialActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
+        rankUpdateProgressBar.visibility = View.VISIBLE
         setDataMaps()
     }
 
@@ -68,42 +69,35 @@ class SocialActivity : AppCompatActivity() {
         userEmailView = findViewById(R.id.userEmail)
         userRankView = findViewById(R.id.userRank)
         friendListLayout = findViewById(R.id.friendList)
-        editNameView = findViewById(R.id.editNickName)
-        editNameView.visibility = View.GONE
+
+        // Customized Dialog for nick name change
         editNameBtn = findViewById(R.id.nameBtn)
-        confirmNameBtn = findViewById(R.id.confirmNameBtn)
-        confirmNameBtn.visibility = View.GONE
-
         editNameBtn.setOnClickListener {
-            editNameView.visibility = View.VISIBLE
-            confirmNameBtn.visibility = View.VISIBLE
-            editNameView.requestFocus()
-        }
 
-        confirmNameBtn.setOnClickListener {
+            // Initialize a new instance of
+            val builder = AlertDialog.Builder(this@SocialActivity)
+            val view = View.inflate(this, R.layout.change_nickname_dialog, null)
+            val editNickName: EditText = view.findViewById(R.id.editNickName)
+            builder.setView(view)
+            builder.setTitle("Your Name")
+            builder.setNegativeButton("Cancel") {_,_ -> }
+            builder.setPositiveButton("Confirm") {_, _ ->
+                val curname: String = userNickNameView.text.toString()
+                val nickname: String = editNickName.text.toString()
+                // That is no change at all.
+                if(nickname == curname) {
+                    return@setPositiveButton
+                }
+                // Reject nickname that is too long or too short
+                if(nickname.length > 15 || nickname.length < 3) {
+                    Toast.makeText(this, "Name is too long or too short.", Toast.LENGTH_SHORT).show()
+                    return@setPositiveButton
+                }
 
-            val nickname: String = editNameView.text.toString()
-            val curname: String = userNickNameView.text.toString()
-
-            // That is no change at all.
-            if(nickname == curname) {
-                editNameView.visibility = View.GONE
-                confirmNameBtn.visibility = View.GONE
-                return@setOnClickListener
-            }
-
-            // Reject nickname that is too long or too short
-            if(nickname.length > 15 || nickname.length < 3) {
-                editNameView.visibility = View.GONE
-                confirmNameBtn.visibility = View.GONE
-                Toast.makeText(this, "Please select nickname of length 3-15 characters.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val registeredNamesDoc = firestore?.collection("pool")?.document("names")
-            val namesInPool = ArrayList<String>()
-            registeredNamesDoc?.get()
-                    ?.addOnSuccessListener { snapshot ->
+                val registeredNamesDoc = firestore?.collection("pool")?.document("names")
+                val namesInPool = ArrayList<String>()
+                registeredNamesDoc?.get()
+                        ?.addOnSuccessListener { snapshot ->
                         val data = snapshot.data
                         if (data.isNullOrEmpty()) {
                             Log.i(tag, "No names in the data pool yet.")
@@ -120,12 +114,15 @@ class SocialActivity : AppCompatActivity() {
                         } else {
                             // Change the nick name only when it is unique
                             changeNickName(nickname)
-                            editNameView.visibility = View.GONE
-                            confirmNameBtn.visibility = View.GONE
                             userNickNameView.text = nickname
                         }
                     }
+            }
+            builder.show()
         }
+
+        // Showing it is still updating the friend list
+        rankUpdateProgressBar = findViewById(R.id.rankUpdateProgress)
 
     }
 
@@ -194,7 +191,7 @@ class SocialActivity : AppCompatActivity() {
 
     /* To display the friend list with (rank, name, gold),
     * it needs to load the necessary data from the database.
-    * The strategy here is:
+    * The strategy here is: (Since it involves with ranking, process is expected to be relatively slow)
     * 1. Retrieve a list of friends' emails
     * 2. For each friend's email:
     *    2.1 update the nameMap (storing nicknames of friends)
@@ -202,6 +199,9 @@ class SocialActivity : AppCompatActivity() {
     * 3. After last gold number is added to goldMap, update the rankedEmails (storing friends' emails according to ranking of wealth)
     * 4. Display the friend list accordingly.
     * The four functions below are strongly related to each other.
+    *
+    * Notice that to ensure nameMap and goldMap finish updating before displaying the ranking list,
+    * I force them to update one by one, which requires more time to run, this is one thing needed to be improved!
     * */
 
     private fun setDataMaps() {
@@ -329,6 +329,7 @@ class SocialActivity : AppCompatActivity() {
             tr.addView(goldText)
             friendListLayout.addView(tr)
         }
+        rankUpdateProgressBar.visibility = View.GONE
 
     }
 

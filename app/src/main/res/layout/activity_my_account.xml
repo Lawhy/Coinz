@@ -334,7 +334,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/dayOfWeek">
+        app:layout_constraintTop_toTopOf="@+id/dayOfWeek"
+        android:isScrollContainer="false">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -371,7 +372,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/localScroll">
+        app:layout_constraintTop_toBottomOf="@+id/localScroll"
+        android:isScrollContainer="false">
 
         <LinearLayout
             android:layout_width="match_parent"

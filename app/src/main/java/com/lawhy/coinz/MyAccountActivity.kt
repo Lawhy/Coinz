@@ -6,14 +6,32 @@ import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.Gravity
+import android.view.View
 import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 import java.time.LocalDateTime
 
 class MyAccountActivity : AppCompatActivity() {
+
+    /** This activity deals with the Personal Account of the user.
+     * Main functionality:
+     *  1. Display and update statistics.
+     *  2. Set up local wallet (simply for more efficient statistics display)
+     *  2. Bank local/foreign coins.
+     *  3. Send local coin (foreign coin not allowed to send, prevent unlimited transaction)
+     * The statistics summary:
+     *    1. Number of Gold
+     *    2. For each type of the currency {SHIL, DOLR, QUID, PENY}:
+     *      a. Number of local coins
+     *      b. Number of foreign coins (Received from other players)
+     *      c. Value (In total)
+     *      d. Exchange-Rate (Daily X-Rate)
+     * Also, send button will trigger a dialog showing a list of friend (i.e. you can only send coin to a friend)
+     * */
 
     private lateinit var exchangeRates: HashMap<*, *>
     private lateinit var wallet: Wallet
@@ -22,14 +40,8 @@ class MyAccountActivity : AppCompatActivity() {
     private val bankLIMIT = 25
     private var mapDate = MyUtils().getCurrentDate()
 
-    /* The statistics summary of Gold and Coins
-     * 1. Number of Gold
-     * 2. For each type of the currency {SHIL, DOLR, QUID, PENY}:
-     *    a. Number of local coins
-     *    b. Number of foreign coins (Received from other players)
-     *    c. Value (In total)
-     *    d. Exchange-Rate (In-time X-Rate)
-     */
+
+    // Statistics components
     private lateinit var goldNumberView: TextView
     // SHIL
     private lateinit var localSHIL: TextView
@@ -62,12 +74,16 @@ class MyAccountActivity : AppCompatActivity() {
     // Display banked number of coins today
     private lateinit var bankNumberView: TextView
 
-    // Firebase
+    // Fire-base
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private lateinit var userID: String
     private lateinit var userEmail: String
     private var firestore: FirebaseFirestore? = null
+    private var friendDocRef: DocumentReference? = null
+    private var goldDocRef: DocumentReference? = null
+    private var coinsDocRef: DocumentReference? = null
+    private var foreignCoinsDocRef: DocumentReference? = null
 
     private val tag = "MyAccountActivity"
 
@@ -77,7 +93,7 @@ class MyAccountActivity : AppCompatActivity() {
 
         exchangeRates = intent.extras?.get("exchangeRates") as HashMap<*, *>
 
-        // Firebase Initialization
+        // Fire-base Initialization
         mAuth = FirebaseAuth.getInstance()
         user = mAuth?.currentUser
         userID = user!!.uid
@@ -87,6 +103,10 @@ class MyAccountActivity : AppCompatActivity() {
                 .setTimestampsInSnapshotsEnabled(true)
                 .build()
         firestore?.firestoreSettings = settings
+        friendDocRef = firestore?.collection("friends")?.document(userEmail)
+        goldDocRef = firestore?.collection("gold")?.document(userEmail)
+        coinsDocRef = firestore?.collection("coins")?.document(userEmail)
+        foreignCoinsDocRef = firestore?.collection("foreignCoins")?.document(userEmail)
 
         initStatsViews()
         initGoldStat()
@@ -147,9 +167,9 @@ class MyAccountActivity : AppCompatActivity() {
 
     private fun setBankedNumber() {
 
-        firestore?.collection("gold")
-                ?.document(userEmail)
-                ?.get()
+        // In the gold collection, each userEmail is a document
+        // and each document contains two fields: goldNumber, bankedNumber
+        goldDocRef?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
                     if (data.isNullOrEmpty()) {
@@ -157,24 +177,21 @@ class MyAccountActivity : AppCompatActivity() {
                         val originalMap = HashMap<String, Any>()
                         originalMap["goldNumber"] = 0.000
                         originalMap["bankedNumber"] = 0
-                        firestore?.collection("gold")
-                                ?.document(userEmail)
-                                ?.set(originalMap)
+                        goldDocRef?.set(originalMap)
 
                     } else {
                         if(mapDate != MyUtils().getCurrentDate()) {
                             Log.i(tag, "Renew banked number for a new day!")
                             mapDate = MyUtils().getCurrentDate()
                             bankedNum = 0
-                            firestore?.collection("gold")
-                                    ?.document(userEmail)
-                                    ?.update(mapOf("bankedNumber" to 0))
+                            goldDocRef?.update(mapOf("bankedNumber" to 0))
                         } else {
                             bankedNum = if (data.keys.contains("bankedNumber"))
                             { data["bankedNumber"].toString().toInt() } else { 0 }
                             Log.i(tag, "The banked coin number is $bankedNum")
                         }
                     }
+                    // Update the banked number view accordingly
                     bankNumberView.text = "You have banked $bankedNum coins today (Limit: 25)."
                 }
     }
@@ -183,9 +200,7 @@ class MyAccountActivity : AppCompatActivity() {
 
         bankNumberView.text = "You have banked $bankedNum coins today (Limit: 25)."
 
-        firestore?.collection("gold")
-                ?.document(userEmail)
-                ?.update(mapOf("bankedNumber" to bankedNum))
+        goldDocRef?.update(mapOf("bankedNumber" to bankedNum))
                 ?.addOnSuccessListener{ Log.i(tag, "Banked Coin Number has been uploaded to Database.")}
                 ?.addOnFailureListener { Log.wtf(tag, "Banked Coin Number cannot be uploaded!") }
 
@@ -194,9 +209,7 @@ class MyAccountActivity : AppCompatActivity() {
     private fun initGoldStat() {
 
         // Retrieve stored Gold Number from Fire-store
-        firestore?.collection("gold")
-                ?.document(userEmail)
-                ?.get()
+        goldDocRef?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
                     if (data.isNullOrEmpty()) {
@@ -204,9 +217,7 @@ class MyAccountActivity : AppCompatActivity() {
                         val originalMap = HashMap<String, Any>()
                         originalMap["goldNumber"] = 0.000
                         originalMap["bankedNumber"] = 0
-                        firestore?.collection("gold")
-                                ?.document(userEmail)
-                                ?.set(originalMap)
+                        goldDocRef?.set(originalMap)
                                 ?.addOnSuccessListener { Log.i(tag, "Init Gold Number in account.") }
                                 ?.addOnFailureListener { Log.wtf(tag, "Gold Number cannot be initialised!") }
                     } else  {
@@ -223,12 +234,11 @@ class MyAccountActivity : AppCompatActivity() {
         goldNumber += increase
 
         // Upload gold number to fire-store
-        firestore?.collection("gold")
-                ?.document(userEmail)
-                ?.update(mapOf("goldNumber" to goldNumber))
+        goldDocRef?.update(mapOf("goldNumber" to goldNumber))
                 ?.addOnSuccessListener { Log.i(tag, "Gold Number has been updated!")}
                 ?.addOnFailureListener { Log.wtf(tag, "Gold Number cannot be updated!") }
 
+        // Display gold number in 3 s.f.
         goldNumberView.text = "%.3f".format(goldNumber)
 
     }
@@ -238,9 +248,7 @@ class MyAccountActivity : AppCompatActivity() {
         wallet = Wallet(ArrayList(), ArrayList())
 
         // Retrieve stored coins information from Fire-store
-        firestore?.collection("coins")
-                ?.document(userEmail)
-                ?.get()
+        coinsDocRef?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
                     if (data.isNullOrEmpty()) {
@@ -379,30 +387,124 @@ class MyAccountActivity : AppCompatActivity() {
             tr.addView(bankBtn)
             coinsListView.addView(tr)
 
-            // Add Set OnClick Listener
-            bankBtn.setOnClickListener {
-                val coin = wallet.coins[i]
-                val alertDialog = AlertDialog.Builder(this)
-                alertDialog.setTitle("Sure to bank this coin?")
-                alertDialog.setMessage("${coin.currency}: %.3f".format(coin.value))
-                alertDialog.setPositiveButton("YES") { _,_ ->
-                    val gain = bankCoin(coin)
-                    if(gain > 0) {
-                        Log.i(tag, "Gained Gold $gain")
-                        updateGoldStat(increase = gain)
-                        updateCoinsListView(wallet)
-                    } else {
-                        Log.i(tag, "Coin is not allowed to banked.")
-                    }
-                }
-                alertDialog.setNegativeButton("NO") {_,_ -> }
-                alertDialog.show()
-            }
-
-            sendBtn.setOnClickListener {
-               // val sentCoin = wallet.coins[i]
-            }
+            val coin = wallet.coins[i]
+            setBankBtnOnClick(bankBtn, coin)
+            setSendBtnOnClick(sendBtn, coin)
         }
+    }
+
+    private fun setBankBtnOnClick(bankBtn: Button, coin: Coin) {
+
+        bankBtn.setOnClickListener {
+            val alertDialog = AlertDialog.Builder(this)
+            alertDialog.setTitle("Sure to bank this coin?")
+            alertDialog.setMessage("${coin.currency}: %.3f".format(coin.value))
+            alertDialog.setPositiveButton("YES") { _,_ ->
+                val gain = bankCoin(coin) // Obtain the gained gold and bank the coin
+                if(gain > 0) {
+                    Log.i(tag, "Gained Gold $gain")
+                    updateGoldStat(increase = gain)
+                    updateCoinsListView(wallet)
+                } else {
+                    Log.i(tag, "Coin is not allowed to banked.")
+                }
+            }
+            alertDialog.setNegativeButton("NO") {_,_ -> }
+            alertDialog.show()
+        }
+    }
+
+    private fun setSendBtnOnClick(sendBtn: Button, coin: Coin) {
+
+        sendBtn.setOnClickListener {
+
+            val alertDialog = AlertDialog.Builder(this@MyAccountActivity)
+            alertDialog.setTitle("Sure to send this coin?")
+            val view = View.inflate(this, R.layout.send_coin_dialog, null)
+            val friendsLayout: TableLayout = view.findViewById(R.id.sendCoinFriendList) // Display friend list on this layout
+            var choiceToSend = "" // For one send request, only one choice of email.
+            friendDocRef?.get()?.addOnSuccessListener { snapShotFriend ->
+                val friends = snapShotFriend.data?.values
+                if (friends.isNullOrEmpty()) {
+                    Log.d(tag, "No friend at all.")
+                } else {
+                    Log.d(tag, "Retrieve the friend list.")
+                    val textNameViews = ArrayList<TextView>() // Create this collection for animation of selection effect
+                    // Add a table row for each friend's email
+                    for (em in friends) {
+                        val tr = TableRow(this)
+                        tr.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
+                        // A text view to display the email
+                        val textName = TextView(this)
+                        textName.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 2f)
+                        textName.textSize = 18f
+                        textName.gravity = Gravity.CENTER
+                        textName.text = em.toString()
+                        textName.isClickable = true
+
+                        // Set the on click listener for the textName to create a selection effect
+                        textName.setOnClickListener {
+                            textName.background = getDrawable(R.color.mapbox_blue) // Highlight the choice
+                            choiceToSend = em.toString()
+                            for (tv in textNameViews) {
+                                if(tv != textName){
+                                    tv.background = getDrawable(R.color.transparent) // Unhighlight the rest
+                                }
+                            }
+                        }
+
+                        textNameViews.add(textName)
+                        tr.addView(textName)
+                        friendsLayout.addView(tr)
+                    }
+
+                }
+            } ?.addOnFailureListener { e -> Log.wtf(tag, e.message) }
+
+            // Send the coin to the target friend
+            alertDialog.setPositiveButton ("Send") {_,_ ->
+                if (choiceToSend == "") {
+                    Toast.makeText(this, "Please select someone body!", Toast.LENGTH_SHORT).show()
+                } else {
+                    sendCoinTo(coin, choiceToSend)
+                    Toast.makeText(this, "Coin sent to $choiceToSend", Toast.LENGTH_SHORT).show()
+                }
+            }
+            alertDialog.setNegativeButton("Cancel") { _,_ -> }
+            alertDialog.setView(view)
+            alertDialog.show()
+        }
+
+    }
+
+    // Notice that foreign coin cannot be sent again (to prevent players from making unlimited exchange)
+    private fun sendCoinTo(coin: Coin, email: String) {
+
+        // Add the sent coin to the foreignCoins collection according to set email.
+        val foreignCoinsDocRef = firestore?.collection("foreignCoins")?.document(email)
+
+        val coinMap = HashMap<String, Any>()
+        coinMap["id"] = coin.id
+        coinMap["currency"] = coin.currency
+        coinMap["value"] = coin.value
+        coinMap["from"] = userEmail
+
+        foreignCoinsDocRef?.get()
+                ?.addOnSuccessListener {
+                    val data = it.data
+                    if (data.isNullOrEmpty()) {
+                        foreignCoinsDocRef.set(mapOf("0" to coinMap)) // Initialise if null or empty
+                    } else {
+                        val new = data.size.toString()
+                        foreignCoinsDocRef.update(mapOf(new to coinMap))
+                    }
+                    // Can utilize the bankCoin method but not really update the gold number
+                    // to delete the corresponding coin from wallet
+                    bankedNum -= 1 // Since it is not real bank, bankedNum should be kept unchanged
+                    bankCoin(coin)
+                    updateCoinsListView(wallet)
+                }
+                ?.addOnFailureListener { e -> Log.wtf(tag, e.message) }
     }
 
     private fun bankCoin(coinToBank: Coin): Double {
@@ -413,8 +515,7 @@ class MyAccountActivity : AppCompatActivity() {
             val value = coinToBank.value
             wallet.coins.remove(coinToBank)
             // Replacing the online wallet by local wallet
-            firestore?.collection("coins")
-                    ?.document(userEmail)
+            coinsDocRef
                     ?.set(mapOf()) // First remove everything
                     ?.addOnSuccessListener {
                         for (i in 0 until wallet.coins.size) {
@@ -424,8 +525,7 @@ class MyAccountActivity : AppCompatActivity() {
                             coinMap["currency"] = coin.currency
                             coinMap["value"] = coin.value
                             // Upload each coin in the wallet to the database
-                            firestore?.collection("coins")
-                                    ?.document(userEmail)
+                            coinsDocRef
                                     ?.update(mapOf("$i" to coinMap))
                                     ?.addOnSuccessListener {
                                         Log.i(tag, "${i}th coin has been renewed")

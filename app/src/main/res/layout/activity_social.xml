@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ScreenSocial"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/main_no_title"
@@ -16,7 +17,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:text="@string/test_test_com"
-        app:layout_constraintBottom_toTopOf="@+id/scrollView2"
+        app:layout_constraintBottom_toTopOf="@+id/scrollScreenSocial"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/userNickName"
         app:layout_constraintVertical_bias="0.0" />
@@ -56,39 +57,8 @@
         app:layout_constraintStart_toEndOf="@+id/userNickName"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/editNickName"
-        android:layout_width="200dp"
-        android:layout_height="112dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="140dp"
-        android:background="@android:color/holo_orange_light"
-        android:elevation="20dp"
-        android:ems="10"
-        android:gravity="center"
-        android:hint="@string/type_here"
-        android:inputType="textPersonName"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/confirmNameBtn"
-        android:layout_width="202dp"
-        android:layout_height="39dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:background="@android:color/holo_orange_dark"
-        android:elevation="20dp"
-        android:text="@string/confirm"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editNickName" />
-
     <ScrollView
-        android:id="@+id/scrollView2"
+        android:id="@+id/scrollScreenSocial"
         android:layout_width="0dp"
         android:layout_height="417dp"
         android:layout_marginBottom="8dp"
@@ -104,6 +74,7 @@
         app:layout_constraintVertical_bias="0.664">
 
         <LinearLayout
+            android:id="@+id/linearLayoutSocial"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -148,6 +119,21 @@
             </TableLayout>
         </LinearLayout>
     </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/rankUpdateProgress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="180dp"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollScreenSocial"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/scrollScreenSocial"
+        app:layout_constraintVertical_bias="0.0" />
 
 
 </android.support.constraint.ConstraintLayout>
