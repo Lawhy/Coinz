@@ -63,7 +63,6 @@ class SocialActivity : AppCompatActivity() {
         setDataMaps()
     }
 
-
     private fun initView() {
         userNickNameView = findViewById(R.id.userNickName)
         userEmailView = findViewById(R.id.userEmail)
@@ -212,74 +211,80 @@ class SocialActivity : AppCompatActivity() {
             if (friends.isNullOrEmpty()){ Log.i(tag, "No friend at all.") }
             else {
                 //Count the user him/herself as a friend
-                updateNameMap(userEmail)
-                updateGoldMap(userEmail)
-
-                for (i in 0 until friends.size) {
-                    val email = friends[i]
-                    Log.d(tag, "A friend $email")
-                    if(i == friends.size - 1) {
-                        updateNameMap(email.toString(), isLast = true)
-                    } else {
-                        updateNameMap(email.toString()) // nameMap will trigger update of goldMap
-                    }
+                val friendsAndMe = ArrayList<String>()
+                friendsAndMe.add(userEmail)
+                for (f in friends) {
+                    friendsAndMe.add(f.toString())
                 }
+                updateNameMap(friendsAndMe, 0)
                 Log.i(tag, "Data maps are constructed.")
             }
+
         }
 
     }
 
-    private fun updateNameMap(email: String, isLast: Boolean=false) {
+    private fun updateNameMap(emails: ArrayList<String>, pointer: Int = 0) {
+
+        val email = emails[pointer]
 
         firestore?.collection("nicknames")
                 ?.document(email)
                 ?.get()
                 ?.addOnSuccessListener { n ->
                     val nickname = n.data
-                    if(nickname.isNullOrEmpty()) {Log.i(tag, "No name at all.")}
-                    else {
+                    if(nickname.isNullOrEmpty()) {
+                        Log.i(tag, "No name at all.")
+                        nameMap[email] = email
+                    } else {
                         nameMap[email] = nickname["name"].toString()
-                        Log.d(tag, "Check NAME MAP: $nameMap")
-                        updateGoldMap(email, isLast) // goldMap will trigger update of rankList
                     }
+                    Log.d(tag, "Check NAME MAP: $nameMap")
+                    // update goldMap if nameMap is updated
+                    updateGoldMap(emails, pointer)
                 }?.addOnFailureListener { Log.wtf(tag, it.message) }
 
     }
 
-    private fun updateGoldMap(email: String, isLast: Boolean=false) {
+    private fun updateGoldMap(emails: ArrayList<String>, pointer: Int = 0) {
+
+        val email = emails[pointer]
 
         firestore?.collection("gold")
                 ?.document(email)
                 ?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if(data.isNullOrEmpty()) {Log.i(tag, "No Gold info at all.")}
+                    if(data.isNullOrEmpty()) {
+                        Log.i(tag, "No Gold info at all.")
+                        goldMap[email] = 0.000
+                    }
                     else {
                         if(data["goldNumber"] != null) {
                             goldMap[email] = data["goldNumber"].toString().toDouble()
                         } else {
                             goldMap[email] = 0.000
                         }
-                        if (isLast) {
-                            // Somehow the last assignment takes a while, so I have to add this line
-                            // waiting for full update of data maps.
-                            while(nameMap.size != goldMap.size) {
-                                Log.d(tag, "Waiting.")
-                            }
-                            updateRankedEmails()
-                        }
-                        Log.d(tag, "Check GOLD MAP: $goldMap")
+                    }
+                    Log.d(tag, "Check GOLD MAP: $goldMap")
+                    if (pointer == emails.size - 1) {
+                        Log.d(tag, "[DataMap Updating]: Last one of all ${emails.size}")
+                        Log.d(tag, "[GoldMap]:${goldMap.size} [NameMap]:${nameMap.size}")
+                        // Update the view accordingly
+                        updateRankedEmails()
+                    } else {
+                        // Go back to updateNameMap but moving pointer to next one
+                        updateNameMap(emails, pointer + 1)
                     }
                 }?.addOnFailureListener { Log.wtf(tag, it.message) }
     }
 
     private fun updateRankedEmails() {
         rankedEmails.clear()
-        Log.d(tag, "[Name!!!] $nameMap")
-        Log.d(tag, "[Gold!!!] $goldMap")
-        rankedEmails.addAll(goldMap.toList().sortedBy { (_, value) -> value}.toMap().keys.toList().reversed())
-        Log.d(tag, "[Ranking!!!]: $rankedEmails")
+        Log.d(tag, "[NameMap] $nameMap")
+        Log.d(tag, "[GoldMap] $goldMap")
+        rankedEmails += goldMap.toList().sortedBy { (_, value) -> value}.toMap().keys.toList().reversed()
+        Log.d(tag, "[Ranking]: $rankedEmails")
         displayFriendsByRank()
     }
 

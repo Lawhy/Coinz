@@ -47,7 +47,7 @@ class SignUpActivity : AppCompatActivity() {
 
         // CloseBtn
         val closeBtn = findViewById<ImageButton>(R.id.closeSuBtn)
-        closeBtn.setOnClickListener { startActivity(Intent(this, StartActivity::class.java))  }
+        closeBtn.setOnClickListener { startActivity(Intent(this, MainActivity::class.java))  }
     }
 
     private fun registerUser() {

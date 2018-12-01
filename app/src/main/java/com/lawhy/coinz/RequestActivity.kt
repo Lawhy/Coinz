@@ -169,7 +169,6 @@ class RequestActivity : AppCompatActivity() {
 
     private fun displayFriendRequests() {
 
-        friendReqsLayout.removeAllViews()
         emailsFromRequests.clear()
 
         requestDocRef?.get()?.addOnSuccessListener {
@@ -189,6 +188,8 @@ class RequestActivity : AppCompatActivity() {
     }
 
     private fun updateFriendRequestsView(emails: ArrayList<String>) {
+
+        friendReqsLayout.removeAllViews()
 
         for (i in 0 until emails.size) {
             val tr = TableRow(this)
@@ -267,6 +268,7 @@ class RequestActivity : AppCompatActivity() {
                     Toast.makeText(this, "Successfully add a friend!", Toast.LENGTH_SHORT).show()
                     emails.remove(em)
                     updateFriendRequests(emails)
+                    updateFriendRequestsView(emails)
                 }
 
                 alertDialog.setNegativeButton("NO") { _, _ -> }
@@ -290,16 +292,16 @@ class RequestActivity : AppCompatActivity() {
 
 
     private fun updateFriendRequests(emails: ArrayList<String>) {
-
         requestDocRef?.set(mapOf())?.addOnSuccessListener {
             Log.d(tag, "Clean all the friend requests before update.")
             for (i in 0 until emails.size) {
                 requestDocRef?.update(mapOf(i.toString() to emails[i]))
-                        ?.addOnSuccessListener { Log.i(tag, "${i}th request has been renewed") }
+                        ?.addOnSuccessListener {
+                            Log.i(tag, "${i}th request has been renewed")
+                        }
                         ?.addOnFailureListener { e -> Log.wtf(tag, e.message) }
             }
         }
-        displayFriendRequests() //Refresh the requests displayed
     }
 }
 

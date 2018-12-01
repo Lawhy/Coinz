@@ -244,6 +244,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     override fun onStop() {
         super.onStop()
         locationEngine?.removeLocationUpdates()
+        locationEngine?.removeLocationEngineListener(this)
         locationLayerPlugin?.onStop()
         mapView.onStop()
     }
@@ -308,6 +309,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         locationLayerPlugin?.setLocationLayerEnabled(true)
         locationLayerPlugin?.cameraMode = CameraMode.TRACKING
         locationLayerPlugin?.renderMode = RenderMode.COMPASS
+        lifecycle.addObserver(locationLayerPlugin!!)
     }
 
     private fun setCameraPosition(location: Location) {

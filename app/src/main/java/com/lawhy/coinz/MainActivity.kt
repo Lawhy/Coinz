@@ -7,7 +7,7 @@ import android.support.v7.app.AlertDialog
 import kotlinx.android.synthetic.main.activity_start.*
 
 
-class StartActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -31,7 +31,7 @@ class AuthenticationActivity : AppCompatActivity(){
 
     override fun onBackPressed() {
         finishAndRemoveTask()
-        startActivity(Intent(this, StartActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
     }
 
     private fun mySetOnClick(){
@@ -48,7 +48,7 @@ class AuthenticationActivity : AppCompatActivity(){
         val closeBtn: ImageButton = findViewById(R.id.closeAutBtn)
         closeBtn.setOnClickListener {
             finish()
-            startActivity(Intent(this, StartActivity::class.java)) }
+            startActivity(Intent(this, MainActivity::class.java)) }
     }
 
     private fun userLoginIn() {

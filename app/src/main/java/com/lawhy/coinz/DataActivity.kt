@@ -57,7 +57,7 @@ class DataActivity : AppCompatActivity() {
         }
 
         if(firstDownloadToday) {
-            mapToday = DownloadActivity.DownloadCompleteRunner.result
+            mapToday = DownloadActivity.result
             if (mapToday.isNullOrEmpty()) {
                 Log.d(tag, "No Coinz Map downloaded!")
             } else {

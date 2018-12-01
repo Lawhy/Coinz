@@ -1,7 +1,6 @@
 package com.lawhy.coinz
 
 import android.content.Intent
-import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
@@ -10,13 +9,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-import java.io.IOException
-import java.io.InputStream
-import java.net.HttpURLConnection
-import java.net.URL
 
 
-class DownloadActivity : AppCompatActivity() {
+class DownloadActivity : AppCompatActivity(), DownloadCompleteListener{
 
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
@@ -69,6 +64,18 @@ class DownloadActivity : AppCompatActivity() {
         alertDialog.show()
     }
 
+    // Download Result that will be sent to Data Activity
+    companion object{
+        var result : String? = null
+    }
+
+    override fun downloadComplete(result: String, intent: Intent) {
+        DownloadActivity.result = result
+        Log.i("[DownloadMapToday]", "Completed!")
+        // Start a new task after completing the download
+        startActivity(intent)
+    }
+
 
     // read the download date from firestore, empty string if there is none
     private fun downloadIfFirst(){
@@ -94,7 +101,7 @@ class DownloadActivity : AppCompatActivity() {
                     }
                     if(firstDownloadToday) {
                         // Download the map today and initialize everything
-                        this.DownloadFileTask(DownloadCompleteRunner, intent)
+                        DownloadFileTask(this, intent)
                                 .execute("http://homepages.inf.ed.ac.uk/stg/coinz/$currentDate/coinzmap.geojson")
                     } else {
                         // Restore data from firestore
@@ -125,58 +132,5 @@ class DownloadActivity : AppCompatActivity() {
             firstDownloadToday = false
         }
     }
-
-    interface DownloadCompleteListener {
-        // Once the download complete, shift from curActivity to the nextActivity
-        fun downloadComplete(result: String)
-    }
-
-    object DownloadCompleteRunner : DownloadCompleteListener {
-        var result : String? = null
-        override fun downloadComplete(result: String) {
-            this.result = result
-            Log.i("[DownloadMapToday]", "Completed!")
-        }
-    }
-
-    inner class DownloadFileTask(private val caller: DownloadCompleteListener,
-                                 private val intent: Intent) : AsyncTask<String, Void, String>() {
-
-        override fun doInBackground(vararg urls: String): String = try{
-            loadFileFromNetwork(urls[0])
-        } catch (e: IOException){
-            "Unable to load the content. Please check your network connection."
-        }
-
-        private fun loadFileFromNetwork(urlString: String): String {
-            val stream : InputStream = downloadUrl(urlString)
-            // read input from the stream, read the result as a string
-            val result = stream.bufferedReader().use { it.readText() }
-            stream.close()
-            return result
-        }
-
-        // Given a string representation of a URL, sets up a connection and gets an input stream
-        @Throws(IOException::class)
-        fun downloadUrl(urlString: String): InputStream {
-            val url = URL(urlString)
-            val conn = url.openConnection() as HttpURLConnection
-
-            conn.readTimeout = 10000
-            conn.connectTimeout = 15000
-            conn.requestMethod = "GET"
-            conn.doInput = true
-            conn.connect()
-            return conn.inputStream
-        }
-
-        override fun onPostExecute(result: String) {
-            super.onPostExecute(result)
-            caller.downloadComplete(result)
-            // Start a new task after completing the download
-            startActivity(intent)
-        }
-    }
-
 
 }
