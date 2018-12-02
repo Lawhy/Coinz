@@ -19,26 +19,31 @@ class MyAccountActivity : AppCompatActivity() {
 
     /** This activity deals with the Personal Account of the user.
      * Main functionality:
-     *  1. Display and update statistics.
-     *  2. Set up local wallet (simply for more efficient statistics display)
-     *  2. Bank local/foreign coins.
-     *  3. Send local coin (foreign coin not allowed to send, prevent unlimited transaction)
+     *   1. Display and update statistics.
+     *   2. Set up local wallet (simply for more efficient statistics display)
+     *   2. Bank local/foreign coins.
+     *   3. Send local coin (foreign coin not allowed to send, prevent unlimited transaction)
      * The statistics summary:
-     *    1. Number of Gold
-     *    2. For each type of the currency {SHIL, DOLR, QUID, PENY}:
+     *   1. Number of Gold
+     *   2. For each type of the currency {SHIL, DOLR, QUID, PENY}:
      *      a. Number of local coins
      *      b. Number of foreign coins (Received from other players)
      *      c. Value (In total)
      *      d. Exchange-Rate (Daily X-Rate)
+     * Data storage used here:
+     *   1. friends -> userEmail -> list of friends' emails
+     *   2. gold -> userEmail -> goldNumber, bankedNumber
+     *   3. coins -> userEmail -> list of local coins
+     *   4. foreignCoins -> userEmail -> list of foreign coins
      * Also, send button will trigger a dialog showing a list of friend (i.e. you can only send coin to a friend)
      * */
 
     private lateinit var exchangeRates: HashMap<*, *>
-    private lateinit var wallet: Wallet
+    private lateinit var wallet: Wallet // local wallet
     private var goldNumber: Double = 0.000
-    private var bankedNum = 0
-    private val bankLIMIT = 25
-    private var mapDate = MyUtils().getCurrentDate()
+    private var bankedNum = 0 // banked number of coins today (FOREIGN COINS ARE NOT LIMITED BY THIS)
+    private val bankLIMIT = 25 // limit of banking number for collected coins
+    private var mapDate = MyUtils().getCurrentDate() // to check if the bankedNum should be renewed
 
 
     // Statistics components
@@ -71,7 +76,7 @@ class MyAccountActivity : AppCompatActivity() {
     private lateinit var coinsListView: TableLayout
     private lateinit var foreignListView: TableLayout
 
-    // Display banked number of coins today
+    // Display banked number of coins today (FOREIGN COINS ARE NOT LIMITED BY THIS)
     private lateinit var bankNumberView: TextView
 
     // Fire-base
@@ -243,6 +248,7 @@ class MyAccountActivity : AppCompatActivity() {
 
     }
 
+    // Retrieve both the coins and the foreign coins from online storage, fill them into the local wallet.
     private fun localWallet() {
 
         wallet = Wallet(ArrayList(), ArrayList())
@@ -255,7 +261,7 @@ class MyAccountActivity : AppCompatActivity() {
                         Log.i(tag, "No coins in the wallet.")
                     } else {
                         for (coinMap in data) {
-                            Log.i("[userEmail:$userEmail]", "Local Wallet is initialised.")
+                            Log.i("[userEmail:$userEmail]", "Coins are filled in the local coins.")
                             val index = coinMap.key as String
                             val properties = coinMap.value as HashMap<*, *>
                             val id = properties["id"] as String
@@ -265,11 +271,33 @@ class MyAccountActivity : AppCompatActivity() {
                             Log.i("[coin$index]", "$currency: $value")
                             wallet.add(coin) // These coins are all local coins
                         }
-                        // Update everything when wallet is prepared
-                        updateXRates()
-                        updateValue(wallet)
-                        updateLocal(wallet)
-                        updateCoinsListView(wallet)
+
+                        // Fill foreign coins into the wallet as well
+                        foreignCoinsDocRef?.get()?.addOnSuccessListener { f ->
+                            val foreignData = f.data
+                            if (foreignData.isNullOrEmpty()) {
+                                Log.i(tag, "No foreign coins in the wallet.")
+                            } else {
+                                for (foreignCoinMap in foreignData) {
+                                    Log.i("[userEmail:$userEmail]", "Foreign coins are filled in the local wallet.")
+                                    val fIndex = foreignCoinMap.key as String
+                                    val fProperties = foreignCoinMap.value as HashMap<*, *>
+                                    val fId = fProperties["id"] as String
+                                    val fCurrency = fProperties["currency"] as String
+                                    val fValue = fProperties["value"] as Double
+                                    val foreignCoin = Coin(fId, fCurrency, fValue, null) // Here marker is not important
+                                    Log.i("[ForeignCoin$fIndex]", "$fCurrency: $fValue")
+                                    wallet.addForeign(foreignCoin) // Add the foreign coins into the wallet
+                                }
+                            }
+                            // Update everything when wallet is prepared
+                            updateXRates()
+                            updateValue(wallet)
+                            updateLocal(wallet)
+                            updateForeign(wallet)
+                            updateCoinsListView(wallet)
+                            updateForeignCoinsListView(wallet)
+                        }
                     }
                 }
     }
@@ -295,7 +323,20 @@ class MyAccountActivity : AppCompatActivity() {
         var valQ = 0.000
         var valP = 0.000
 
+        // Attach local coin values
         for (coin in wallet.coins) {
+            val currency = coin.currency
+            when(currency) {
+                "SHIL" -> {valS += coin.value}
+                "DOLR" -> valD += coin.value
+                "QUID" -> valQ += coin.value
+                "PENY" -> valP += coin.value
+                else -> Log.d(tag, "No coins in the wallet!")
+            }
+        }
+
+        // Attach foreign coin values
+        for (coin in wallet.foreignCoins) {
             val currency = coin.currency
             when(currency) {
                 "SHIL" -> {valS += coin.value}
@@ -337,11 +378,39 @@ class MyAccountActivity : AppCompatActivity() {
 
     }
 
+    private fun updateForeign(wallet: Wallet) {
+
+        var foreignS = 0
+        var foreignD = 0
+        var foreignQ= 0
+        var foreignP = 0
+
+        for (coin in wallet.foreignCoins) {
+            val currency = coin.currency
+            when(currency) {
+                "SHIL" -> foreignS += 1
+                "DOLR" -> foreignD += 1
+                "QUID" -> foreignQ += 1
+                "PENY" -> foreignP += 1
+                else -> Log.d(tag, "No coins in the wallet!")
+            }
+        }
+
+        foreignSHIL.text = foreignS.toString()
+        foreignDOLR.text = foreignD.toString()
+        foreignQUID.text = foreignQ.toString()
+        foreignPENY.text = foreignP.toString()
+
+    }
+
     private fun updateCoinsListView(wallet: Wallet) {
 
         coinsListView.removeAllViews()
 
         for (i in 0 until wallet.coins.size) {
+
+            val coin = wallet.coins[i]
+
             val tr = TableRow(this)
             tr.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
 
@@ -354,13 +423,13 @@ class MyAccountActivity : AppCompatActivity() {
             // Display currency
             val tvCurrency = TextView(this)
             tvCurrency.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1F)
-            tvCurrency.text = wallet.coins[i].currency
+            tvCurrency.text = coin.currency
             tvCurrency.gravity = Gravity.CENTER
 
             // Display value
             val tvValue = TextView(this)
             tvValue.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 3F)
-            tvValue.text = "%.3f".format(wallet.coins[i].value)
+            tvValue.text = "%.3f".format(coin.value)
             tvValue.gravity = Gravity.CENTER
 
             // Send Button
@@ -387,24 +456,86 @@ class MyAccountActivity : AppCompatActivity() {
             tr.addView(bankBtn)
             coinsListView.addView(tr)
 
-            val coin = wallet.coins[i]
             setBankBtnOnClick(bankBtn, coin)
             setSendBtnOnClick(sendBtn, coin)
         }
     }
 
-    private fun setBankBtnOnClick(bankBtn: Button, coin: Coin) {
+    private fun updateForeignCoinsListView(wallet: Wallet) {
+
+        foreignListView.removeAllViews()
+
+        for (i in 0 until wallet.foreignCoins.size) {
+
+            val foreignCoin = wallet.foreignCoins[i]
+
+            val tr = TableRow(this)
+            tr.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT)
+
+            // Display coinID
+            val tvID = TextView(this)
+            tvID.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1F)
+            tvID.text = i.toString()
+            tvID.gravity = Gravity.CENTER
+
+            // Display currency
+            val tvCurrency = TextView(this)
+            tvCurrency.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1F)
+            tvCurrency.text = foreignCoin.currency
+            tvCurrency.gravity = Gravity.CENTER
+
+            // Display value
+            val tvValue = TextView(this)
+            tvValue.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 3F)
+            tvValue.text = "%.3f".format(foreignCoin.value)
+            tvValue.gravity = Gravity.CENTER
+
+            // Display cannot send message: BOUND
+            val tvBound = TextView(this)
+            tvBound.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1F)
+            tvBound.text = "BOUND"
+            tvBound.gravity = Gravity.CENTER
+
+            // Bank Button, No send button
+            val bankBtn = Button(this)
+            bankBtn.setBackgroundColor(Color.TRANSPARENT)
+            bankBtn.setTextColor(Color.parseColor("#4264fb"))
+            bankBtn.text = "Bank"
+            bankBtn.textSize = 12f
+            bankBtn.gravity = Gravity.CENTER
+
+            tr.addView(tvID)
+            tr.addView(tvCurrency)
+            tr.addView(tvValue)
+            tr.addView(tvBound) // Important to notice that foreign coin is BOUND, i.e. cannot be sent
+            tr.addView(bankBtn)
+            foreignListView.addView(tr)
+
+            setBankBtnOnClick(bankBtn, foreignCoin, isForeign = true)
+        }
+
+    }
+
+    private fun setBankBtnOnClick(bankBtn: Button, coin: Coin, isForeign: Boolean = false) {
 
         bankBtn.setOnClickListener {
             val alertDialog = AlertDialog.Builder(this)
             alertDialog.setTitle("Sure to bank this coin?")
             alertDialog.setMessage("${coin.currency}: %.3f".format(coin.value))
             alertDialog.setPositiveButton("YES") { _,_ ->
-                val gain = bankCoin(coin) // Obtain the gained gold and bank the coin
+                val gain = if (isForeign) {
+                    bankForeignCoin(coin)
+                } else {
+                    bankCoin(coin)
+                }
                 if(gain > 0) {
                     Log.i(tag, "Gained Gold $gain")
                     updateGoldStat(increase = gain)
-                    updateCoinsListView(wallet)
+                    if(isForeign) {
+                        updateForeignCoinsListView(wallet)
+                    } else {
+                        updateCoinsListView(wallet)
+                    }
                 } else {
                     Log.i(tag, "Coin is not allowed to banked.")
                 }
@@ -478,6 +609,7 @@ class MyAccountActivity : AppCompatActivity() {
     }
 
     // Notice that foreign coin cannot be sent again (to prevent players from making unlimited exchange)
+    // This functionality will suppress the offline commercial activity (like making money by reselling the bought coins in a higher price)
     private fun sendCoinTo(coin: Coin, email: String) {
 
         // Add the sent coin to the foreignCoins collection according to set email.
@@ -503,6 +635,8 @@ class MyAccountActivity : AppCompatActivity() {
                     bankedNum -= 1 // Since it is not real bank, bankedNum should be kept unchanged
                     bankCoin(coin)
                     updateCoinsListView(wallet)
+                    updateLocal(wallet)
+                    updateValue(wallet)
                 }
                 ?.addOnFailureListener { e -> Log.wtf(tag, e.message) }
     }
@@ -545,11 +679,36 @@ class MyAccountActivity : AppCompatActivity() {
 
     }
 
-//    private fun bankForeignCoin(id: Int, penalty: Double = 0.5): Double {
-//        val foreignCoinToBank = wallet.foreignCoins[id]
-//        val xr = exchangeRates[foreignCoinToBank.currency].toString().toDouble()
-//        val value = foreignCoinToBank.value
-//        return xr * value * penalty // number of gold gained with penalty
-//    }
+    // Banking foreign coin is not limited by bank limit, but it comes with a penalty
+    // This promotes player to consider whether banking them directly or using them for the Bonus Trade Offer
+    private fun bankForeignCoin(foreignCoinToBank: Coin, penalty: Double = 0.5): Double {
+
+        val xr = exchangeRates[foreignCoinToBank.currency].toString().toDouble()
+        val value = foreignCoinToBank.value
+        wallet.foreignCoins.remove(foreignCoinToBank)
+
+        // update the online storage of foreign coins
+        foreignCoinsDocRef
+                ?.set(mapOf()) // First remove everything
+                ?.addOnSuccessListener {
+                    for (i in 0 until wallet.foreignCoins.size) {
+                        val coin = wallet.foreignCoins[i]
+                        val coinMap = HashMap<String, Any>()
+                        coinMap["id"] = coin.id
+                        coinMap["currency"] = coin.currency
+                        coinMap["value"] = coin.value
+                        // Upload each coin in the wallet to the database
+                        foreignCoinsDocRef
+                                ?.update(mapOf("$i" to coinMap))
+                                ?.addOnSuccessListener {
+                                    Log.i(tag, "${i}th foreign coin has been renewed")
+                                    updateValue(wallet)
+                                    updateForeign(wallet)
+                                }
+
+                    }
+                }
+        return xr * value * penalty // number of gold gained with penalty
+    }
 
 }

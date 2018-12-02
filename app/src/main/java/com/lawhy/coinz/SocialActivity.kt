@@ -16,6 +16,18 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 class SocialActivity : AppCompatActivity() {
 
+    /** This activity basically displays friend list by ranking of GOLD.
+     *  And Users can change their nickname here.
+     *  Data storage used here:
+     *     1. friends -> userEmail -> list of friend emails
+     *     2. ranking -> userEmail -> list of maps { email, nickname, gold }  (temporary ranking list)
+     *     3. names -> userEmail -> nickname  (For nameMap)
+     *     4. gold -> userEmail -> goldNumber  (For goldMap)
+     *  Possible future improvement:
+     *     1. Add customized portrait.
+     *     2. Delete a Friend...
+     * */
+
     private lateinit var rankUpdateProgressBar: ProgressBar
     private lateinit var userNickNameView: TextView
     private lateinit var userEmailView: TextView
@@ -24,12 +36,13 @@ class SocialActivity : AppCompatActivity() {
     private lateinit var editNameBtn: Button
     private lateinit var userEmail: String
 
-    // Firebase
+    // Fire-base
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private lateinit var userID: String
     private var firestore: FirebaseFirestore? = null
     private var friendDocRef: DocumentReference? = null
+    private var rankDocRef: DocumentReference? = null
 
     private val tag = "SocialActivity"
     // Collections storing information that will be displayed
@@ -41,7 +54,7 @@ class SocialActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_social)
 
-        // Firebase Initialization
+        // Fire-base Initialization
         mAuth = FirebaseAuth.getInstance()
         user = mAuth?.currentUser
         userID = user!!.uid
@@ -52,7 +65,8 @@ class SocialActivity : AppCompatActivity() {
                 .build()
         firestore?.firestoreSettings = settings
 
-        friendDocRef = firestore?.collection("friends")?.document(userEmail)
+        friendDocRef = firestore?.collection("friends")?.document(userEmail) // Friends of the user
+        rankDocRef = firestore?.collection("ranking")?.document(userEmail)  // Ranking of the friends of the user (by GOLD)
 
         initView()
         initPersonalInfo()
@@ -61,7 +75,31 @@ class SocialActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         rankUpdateProgressBar.visibility = View.VISIBLE
-        setDataMaps()
+
+        // The ranking document is aimed to store *temporary data maps* so as to speed up displaying the ranking list.
+        rankDocRef?.get()?.addOnSuccessListener {
+            val rankingData = it.data
+            if (rankingData.isNullOrEmpty()) {
+                Log.d(tag,"First Time loading ranking list or it is empty.")
+                setDataMaps() // First time displaying ranking list is slow.
+            } else {
+                for (k in rankingData.keys) {
+                    // Simply taking everything from the storage
+                    // Notice that this map might be outdated
+                    val userMap = rankingData[k] as HashMap<*, *>
+                    val email = userMap["email"].toString()
+                    nameMap[email] = userMap["name"].toString()
+                    goldMap[email] = userMap["gold"].toString().toDouble()
+                }
+                Log.d(tag, "The retrieved ranking: $rankedEmails")
+                updateRankedEmails()
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        setDataMaps() // Update the ranking when stopped
     }
 
     private fun initView() {
@@ -286,6 +324,22 @@ class SocialActivity : AppCompatActivity() {
         rankedEmails += goldMap.toList().sortedBy { (_, value) -> value}.toMap().keys.toList().reversed()
         Log.d(tag, "[Ranking]: $rankedEmails")
         displayFriendsByRank()
+
+        // Update the ranking to the online storage
+        val rankingMap = HashMap<String, Any>()
+        for (i in 0 until rankedEmails.size) {
+            val email = rankedEmails[i]
+            val name = nameMap[email]
+            val gold = goldMap[email]
+
+            val userMap = HashMap<String, Any?>()
+            userMap["email"] = email
+            userMap["name"] = name
+            userMap["gold"] = gold
+
+            rankingMap[i.toString()] = userMap
+        }
+        rankDocRef?.set(rankingMap)?.addOnSuccessListener { Log.d(tag, "Ranking map has been updated.") }
     }
 
     private fun displayFriendsByRank() {

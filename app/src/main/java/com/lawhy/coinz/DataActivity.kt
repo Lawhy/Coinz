@@ -13,6 +13,13 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 class DataActivity : AppCompatActivity() {
 
+    /** This activity prepares necessary data before delivering the map,
+     * the basic logic here is check *firstDownloadToday*,
+     * if first, use the downloaded brand-new map and replace the one in fire-store;
+     * else, retrieve the stored map from the fire-store: maps -> userEmail -> mapToday.
+     * */
+
+    // Fire-base
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var firestore: FirebaseFirestore? = null
@@ -29,7 +36,7 @@ class DataActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_data)
 
-        // Firebase Initialization
+        // Fire-base Initialization
         mAuth = FirebaseAuth.getInstance()
         user = mAuth?.currentUser
         userID = user!!.uid
@@ -84,7 +91,7 @@ class DataActivity : AppCompatActivity() {
 
         } else {
 
-            // Obtain the modified mapToday(jsonString) from firestore
+            // Obtain the modified mapToday(jsonString) from fire-store
             firestore?.collection("maps")
                     ?.document(userEmail)?.get()
                     ?.addOnSuccessListener { snapshot ->
@@ -93,8 +100,8 @@ class DataActivity : AppCompatActivity() {
                             Log.d(tag, "No map stored! Check database!")
                             // Serious Error will happen if downloadDate has been updated whereas Map is not presented
                             // In this case, remove the downloadDate and let user try again
-                            firestore?.collection("downloadDate")
-                                    ?.document(userEmail)?.set(mapOf())
+                            firestore?.collection("pool")
+                                    ?.document("downloadDate")?.update(mapOf(userID to ""))
                                     ?.addOnSuccessListener {
                                         val alertDialog = AlertDialog.Builder(this)
                                         alertDialog.setTitle("Data is incorrect!")
@@ -111,7 +118,7 @@ class DataActivity : AppCompatActivity() {
                                         Log.wtf(tag, it)
                                     }
                         } else {
-                            Log.d(tag, "Restore map from the firestore!")
+                            Log.d(tag, "Restore map from the fire-store!")
                             mapToday = data["mapToday"].toString().trim()
                             // Go to MapActivity with the wanted jsonString
                             intent.putExtra("mapToday", mapToday)
@@ -121,13 +128,13 @@ class DataActivity : AppCompatActivity() {
                     }
                     ?.addOnFailureListener{
                         Log.w(tag, "Failure on map clean! Go Check!", it)
-                        Toast.makeText(this, "Something wrong happened!",
-                                Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
                     }
         }
 
     }
 
+    // Go to authentication if back pressed.
     override fun onBackPressed() {
         val alertDialog = AlertDialog.Builder(this)
         alertDialog.setTitle("Are you sure!")

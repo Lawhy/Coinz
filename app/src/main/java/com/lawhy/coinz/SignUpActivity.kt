@@ -15,6 +15,10 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException
 
 class SignUpActivity : AppCompatActivity() {
 
+    /** This activity uses fire-base authentication to provide user sign-up
+     *  Some rules of account and password are set.
+     * */
+
     private lateinit var emailText: EditText
     private lateinit var passwordText: EditText
     private lateinit var confirmText: EditText

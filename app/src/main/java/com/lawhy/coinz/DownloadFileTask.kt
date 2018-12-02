@@ -16,6 +16,11 @@ interface DownloadCompleteListener {
 class DownloadFileTask(private val caller: DownloadCompleteListener,
                        private val intent: Intent) : AsyncTask<String, Void, String>() {
 
+    /** Async task with for map downloading:
+     *  1. caller would be the DownloadActivity.
+     *  2. intent leads to next activity.
+     * */
+
     override fun doInBackground(vararg urls: String): String = try{
         loadFileFromNetwork(urls[0])
     } catch (e: IOException){

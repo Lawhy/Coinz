@@ -13,6 +13,13 @@ import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 class DownloadActivity : AppCompatActivity(), DownloadCompleteListener{
 
+    /** This activity provides downloading of new map if ${firstDownloadToday} is true.
+     * ${firstDownloadToday} will be checked by the downloadDate taken from fire-store:
+     * (PATH) pool -> downloadDate -> userID : the last download date.
+     * Next activity will be launched only when download is complete or ${firstDownloadToday} is false.
+     * */
+
+    // Fire-base
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var firestore: FirebaseFirestore? = null

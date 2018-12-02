@@ -11,6 +11,10 @@ import com.google.firebase.auth.FirebaseAuth
 
 class AuthenticationActivity : AppCompatActivity(){
 
+    /** This activity uses fire-base authentication to check valid login,
+     *  if valid, go to DownloadActivity to retrieve today's map.
+     * */
+
     private lateinit var emailText: EditText
     private lateinit var passwordText: EditText
     private lateinit var progressBar: ProgressBar

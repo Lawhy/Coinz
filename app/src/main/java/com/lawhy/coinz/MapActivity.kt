@@ -49,6 +49,18 @@ import java.time.LocalDate
 
 class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineListener, OnMapReadyCallback {
 
+    /** This is the most important activity of all, the main functionality is:
+     *     1. Display a map-box map of spread out coins according to the coin-z map.
+     *     2. Manually collect coin if within 25 meters, if collected, update the map and the wallet.
+     *     3. Auto-check of expired map (daily) or expired coins (weekly)
+     *     4. Floating Action Button Menu that can lead the user to other activities including: (Order preserved)
+     *         a. MyAccount: displaying statistics, managing coins.
+     *         b. Social: friend and ranking list.
+     *         c. BonusTrade: Key bonus feature of this app, with background story and more way to spend coins.
+     *         d. Request: Deal with friend requests.
+     *         e. Help: A help page specifying the app.
+     * */
+
     private lateinit var mapView: MapView
     private lateinit var map: MapboxMap
     private lateinit var permissionManager: PermissionsManager
@@ -493,6 +505,10 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
         if (day == "MONDAY" && firstTimeLaunch) {
             firestore?.collection("coins")
+                    ?.document(userEmail)?.set(mapOf())
+                    ?.addOnSuccessListener { Toast.makeText(this, "It's $day now! Unused Coins have been expired", Toast.LENGTH_SHORT).show() }
+                    ?.addOnFailureListener { Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show() }
+            firestore?.collection("foreignCoins")
                     ?.document(userEmail)?.set(mapOf())
                     ?.addOnSuccessListener { Toast.makeText(this, "It's $day now! Unused Coins have been expired", Toast.LENGTH_SHORT).show() }
                     ?.addOnFailureListener { Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show() }
