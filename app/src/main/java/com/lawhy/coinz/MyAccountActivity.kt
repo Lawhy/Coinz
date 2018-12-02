@@ -531,11 +531,6 @@ class MyAccountActivity : AppCompatActivity() {
                 if(gain > 0) {
                     Log.i(tag, "Gained Gold $gain")
                     updateGoldStat(increase = gain)
-                    if(isForeign) {
-                        updateForeignCoinsListView(wallet)
-                    } else {
-                        updateCoinsListView(wallet)
-                    }
                 } else {
                     Log.i(tag, "Coin is not allowed to banked.")
                 }
@@ -648,6 +643,7 @@ class MyAccountActivity : AppCompatActivity() {
             val xr = exchangeRates[coinToBank.currency].toString().toDouble()
             val value = coinToBank.value
             wallet.coins.remove(coinToBank)
+            updateCoinsListView(wallet)
             // Replacing the online wallet by local wallet
             coinsDocRef
                     ?.set(mapOf()) // First remove everything
@@ -686,6 +682,7 @@ class MyAccountActivity : AppCompatActivity() {
         val xr = exchangeRates[foreignCoinToBank.currency].toString().toDouble()
         val value = foreignCoinToBank.value
         wallet.foreignCoins.remove(foreignCoinToBank)
+        updateForeignCoinsListView(wallet)
 
         // update the online storage of foreign coins
         foreignCoinsDocRef
