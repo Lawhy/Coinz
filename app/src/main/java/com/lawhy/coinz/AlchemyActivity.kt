@@ -138,6 +138,7 @@ class AlchemyActivity : AppCompatActivity() {
             knowMoreDialog.setView(view)
             knowMoreDialog.setPositiveButton("Get it.") {_, _ -> }
             knowMoreDialog.show()
+            print(1+1)
         }
 
     }
