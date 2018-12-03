@@ -10,7 +10,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
-
 class DataActivity : AppCompatActivity() {
 
     /** This activity prepares necessary data before delivering the map,
@@ -30,6 +29,7 @@ class DataActivity : AppCompatActivity() {
 
     // data prepared for mapActivity
     private var firstDownloadToday: Boolean = true
+    private var lastDownloadDate: String = ""
     private var mapToday: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,10 +47,12 @@ class DataActivity : AppCompatActivity() {
                 .build()
         firestore?.firestoreSettings = settings
 
-        // Modify the value of firstDownloadToday according to the sent intent
+        // Modify the value of firstDownloadToday and lastDownloadDate according to the sent intent
         firstDownloadToday = intent.getBooleanExtra("firstDownloadToday", true)
+        lastDownloadDate = intent.getStringExtra("lastDownloadDate")
 
         Log.d(tag, "FirstDownloadToady: $firstDownloadToday")
+        Log.d(tag, "LastDownloadDate: $lastDownloadDate; Today: ${MyUtils().getCurrentDate()}")
     }
 
     override fun onStart() {
@@ -61,6 +63,7 @@ class DataActivity : AppCompatActivity() {
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             // This is important for valid renewal of local wallet, i.e. remove expired coins
             putExtra("firstLaunchToday", firstDownloadToday)
+            putExtra("lastDownloadDate", lastDownloadDate)
         }
 
         if(firstDownloadToday) {

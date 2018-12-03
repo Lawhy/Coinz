@@ -5,7 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.LayerDrawable
-import android.support.v4.content.ContextCompat
+import android.support.v7.content.res.AppCompatResources.getDrawable
 import android.util.Log
 import com.mapbox.mapboxsdk.annotations.Icon
 import com.mapbox.mapboxsdk.annotations.IconFactory
@@ -33,16 +33,16 @@ class MyUtils {
     fun symbolDrawable(context: Context, symbol: Int): Drawable?{
         var icNumber : Drawable? = null
         when(symbol) {
-            0 -> icNumber = ContextCompat.getDrawable(context, R.drawable.ic_zero)
-            1 -> icNumber = ContextCompat.getDrawable(context, R.drawable.ic_one)
-            2 -> icNumber = ContextCompat.getDrawable(context, R.drawable.ic_two)
-            3 -> icNumber = ContextCompat.getDrawable(context, R.drawable.ic_three)
-            4 -> icNumber = ContextCompat.getDrawable(context, R.drawable.ic_four)
-            5 -> icNumber = ContextCompat.getDrawable(context, R.drawable.ic_five)
-            6 -> icNumber = ContextCompat.getDrawable(context, R.drawable.ic_six)
-            7 -> icNumber = ContextCompat.getDrawable(context, R.drawable.ic_seven)
-            8 -> icNumber = ContextCompat.getDrawable(context, R.drawable.ic_eight)
-            9 -> icNumber = ContextCompat.getDrawable(context, R.drawable.ic_nine)
+            0 -> icNumber = getDrawable(context, R.drawable.ic_zero)
+            1 -> icNumber = getDrawable(context, R.drawable.ic_one)
+            2 -> icNumber = getDrawable(context, R.drawable.ic_two)
+            3 -> icNumber = getDrawable(context, R.drawable.ic_three)
+            4 -> icNumber = getDrawable(context, R.drawable.ic_four)
+            5 -> icNumber = getDrawable(context, R.drawable.ic_five)
+            6 -> icNumber = getDrawable(context, R.drawable.ic_six)
+            7 -> icNumber = getDrawable(context, R.drawable.ic_seven)
+            8 -> icNumber = getDrawable(context, R.drawable.ic_eight)
+            9 -> icNumber = getDrawable(context, R.drawable.ic_nine)
             else -> Log.d(context.packageName, "Invalid number on a coin is detected!")
         }
         return icNumber

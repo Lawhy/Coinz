@@ -100,11 +100,12 @@ class DownloadActivity : AppCompatActivity(), DownloadCompleteListener{
                     } else {
                         downloadDate = data[userID].toString().trim()
                     }
-                    checkFirstDownloadToday()
+                    val lastDownloadDate: String = checkFirstDownloadToday()
                     // Customize an intent with extra information indicating first download or not
                     val intent = Intent(this, DataActivity::class.java).apply {
                         addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         putExtra("firstDownloadToday", firstDownloadToday)
+                        putExtra("lastDownloadDate", lastDownloadDate)
                     }
                     if(firstDownloadToday) {
                         // Download the map today and initialize everything
@@ -118,19 +119,18 @@ class DownloadActivity : AppCompatActivity(), DownloadCompleteListener{
                 }
     }
 
-    private fun checkFirstDownloadToday(){
+    private fun checkFirstDownloadToday(): String{
 
         Log.d(tag, "dd: $downloadDate")
         Log.d(tag, "cd: $currentDate")
 
         if (downloadDate != (currentDate)) {
             Log.i(tag, "First time to download today")
-            downloadDate = currentDate
             firestore?.collection("pool")
                     ?.document("downloadDate")
-                    ?.update(mapOf(userID to downloadDate))
+                    ?.update(mapOf(userID to currentDate))
                     ?.addOnSuccessListener {
-                        Log.d("[DownloadDateUpdate]", downloadDate)
+                        Log.d("[DownloadDateUpdate]", currentDate)
                     }
                     ?.addOnFailureListener{
                         Log.d("[DownloadDateUpdate]", "Failure! Go Check!")
@@ -138,6 +138,7 @@ class DownloadActivity : AppCompatActivity(), DownloadCompleteListener{
         } else {
             firstDownloadToday = false
         }
+        return downloadDate  // Now the download date becomes the last download date which is needed for checking expiration of coins
     }
 
 }

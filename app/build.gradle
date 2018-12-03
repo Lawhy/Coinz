@@ -58,6 +58,9 @@ dependencies {
     implementation 'com.android.support:support-media-compat:28.0.0'
     implementation 'com.android.support:support-annotations:28.0.0'
     implementation 'com.android.support:support-v4:28.0.0'
+
+    // Joda Time
+    implementation 'net.danlew:android.joda:2.10.1'
 }
 
 apply plugin: 'com.google.gms.google-services'

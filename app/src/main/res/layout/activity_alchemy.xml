@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/main_no_title"
+    tools:context=".AlchemyActivity">
+
+
+    <ImageView
+        android:id="@+id/imageInvitation"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/scroll"
+        android:src="@drawable/scroll"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.509"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.444" />
+
+    <TextView
+        android:id="@+id/storyView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="18dp"
+        android:padding="18dp"
+        android:text="@string/background_story"
+        android:textStyle="bold|italic"
+        app:layout_constraintBottom_toBottomOf="@+id/imageInvitation"
+        app:layout_constraintEnd_toEndOf="@+id/imageInvitation"
+        app:layout_constraintStart_toStartOf="@+id/imageInvitation"
+        app:layout_constraintTop_toTopOf="@+id/imageInvitation"
+        app:layout_constraintVertical_bias="0.329" />
+
+    <TextView
+        android:id="@+id/titleView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="36dp"
+        android:gravity="center"
+        android:text="@string/an_invitation"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/storyView"
+        app:layout_constraintEnd_toEndOf="@+id/imageInvitation"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/imageInvitation"
+        app:layout_constraintTop_toTopOf="@+id/imageInvitation"
+        app:layout_constraintVertical_bias="0.619" />
+
+    <Button
+        android:id="@+id/knowMoreBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:text="@string/click_here_to_know_more"
+        android:textAllCaps="false"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="@+id/imageInvitation"
+        app:layout_constraintEnd_toEndOf="@+id/imageInvitation"
+        app:layout_constraintTop_toBottomOf="@+id/storyView"
+        app:layout_constraintVertical_bias="0.572" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabToRecipe"
+        android:layout_width="87dp"
+        android:layout_height="64dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:clickable="true"
+        app:backgroundTint="@android:color/holo_red_light"
+        app:layout_constraintBottom_toTopOf="@+id/knowMoreBtn"
+        app:layout_constraintEnd_toEndOf="@+id/imageInvitation"
+        app:layout_constraintStart_toStartOf="@+id/imageInvitation"
+        app:layout_constraintTop_toBottomOf="@+id/storyView"
+        app:layout_constraintVertical_bias="0.804" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:contentDescription="@string/icon"
+        android:elevation="50dp"
+        android:src="@mipmap/ic_hexagram"
+        app:layout_constraintBottom_toBottomOf="@+id/fabToRecipe"
+        app:layout_constraintEnd_toEndOf="@+id/fabToRecipe"
+        app:layout_constraintStart_toStartOf="@+id/fabToRecipe"
+        app:layout_constraintTop_toTopOf="@+id/fabToRecipe" />
+
+</android.support.constraint.ConstraintLayout>

@@ -43,9 +43,12 @@ import com.google.gson.JsonObject
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.annotations.MarkerOptions
 import com.mapbox.mapboxsdk.style.layers.LineLayer
+import net.danlew.android.joda.JodaTimeAndroid
 import org.json.JSONArray
 import org.json.JSONObject
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.DayOfWeek
 
 class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineListener, OnMapReadyCallback {
 
@@ -71,14 +74,14 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     private lateinit var fabMenu: FloatingActionButton
     private lateinit var fabMyAccount: FloatingActionButton
     private lateinit var fabFriendList: FloatingActionButton
-    private lateinit var fabTrade: FloatingActionButton
+    private lateinit var fabAlchemy: FloatingActionButton
     private lateinit var fabAddFriend: FloatingActionButton
     private lateinit var fabHelpPage: FloatingActionButton
 
     private var locationEngine : LocationEngine? = null
     private var locationLayerPlugin: LocationLayerPlugin? = null
 
-    // Firebase
+    // Fire-base
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private lateinit var userID: String
@@ -103,6 +106,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
      * my resort here is to set it false in the renewalWallet() function which is invoked on start.
      * */
     private var firstTimeLaunch: Boolean = false
+    private var lastDownloadDate: String = "" // Sometimes user does not play the game on Monday, this helps to check that, and ensure the expired coins are removed.
 
     private var coinsOnMap = ArrayList<Coin>() // Store the coins' (on the map) information
     private var collectedCoins = ArrayList<Coin>() // Store the *current* collected coins
@@ -126,14 +130,14 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         fabMenu = findViewById(R.id.fab_menu)
         fabMyAccount = findViewById(R.id.fab_myAccount)
         fabFriendList = findViewById(R.id.fab_friendList)
-        fabTrade = findViewById(R.id.fab_trade)
+        fabAlchemy = findViewById(R.id.fab_alchemy)
         fabAddFriend = findViewById(R.id.fab_addFriend)
         fabHelpPage = findViewById(R.id.fab_helpPage)
 
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
 
-        // Firebase Initialization
+        // Fire-base Initialization
         mAuth = FirebaseAuth.getInstance()
         user = mAuth?.currentUser
         userID = user!!.uid
@@ -147,10 +151,14 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
         mapToday = intent.getStringExtra("mapToday")
         firstTimeLaunch = intent.getBooleanExtra("firstLaunchToday", false)
+        lastDownloadDate = intent.getStringExtra("lastDownloadDate")
         // Obtain current map and firstTimeLaunch Info from DataActivity
         if (mapToday == "") {
             Log.w(tag, "No Coinz map detected!")
         }
+
+        // Init the JodaTime which is very convenient for time check
+        JodaTimeAndroid.init(this)
     }
 
     override fun onBackPressed() {
@@ -503,7 +511,15 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
             Toast.makeText(this, "It's $day now! Use your coins!", Toast.LENGTH_SHORT).show()
         }
 
-        if (day == "MONDAY" && firstTimeLaunch) {
+        // Checking if the last download date is before this week's Monday, if so, clean the coins
+        val parsedDate = LocalDate.parse(lastDownloadDate, DateTimeFormatter.ofPattern("yyyy/MM/dd"))
+        val dateNow = LocalDate.now()
+        val monday = dateNow.with(DayOfWeek.MONDAY)
+        val lastDownloadBeforeMonday = parsedDate.isBefore(monday)
+        Log.i(tag, "lastDownloadBeforeMonday: $lastDownloadBeforeMonday")
+        Log.d(tag, "Monday: ${monday.dayOfYear} LastDownloadDate: ${parsedDate.dayOfYear}")
+
+        if (lastDownloadBeforeMonday && firstTimeLaunch) {
             firestore?.collection("coins")
                     ?.document(userEmail)?.set(mapOf())
                     ?.addOnSuccessListener { Toast.makeText(this, "It's $day now! Unused Coins have been expired", Toast.LENGTH_SHORT).show() }
@@ -512,6 +528,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                     ?.document(userEmail)?.set(mapOf())
                     ?.addOnSuccessListener { Toast.makeText(this, "It's $day now! Unused Coins have been expired", Toast.LENGTH_SHORT).show() }
                     ?.addOnFailureListener { Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show() }
+            Log.d(tag, "The coins are all expired!")
         }
         firstTimeLaunch = false // set this boolean to false to prevent overlapped renewal
     }
@@ -579,13 +596,13 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         // The three sub-buttons are invisible initially
         fabMyAccount.visibility = GONE
         fabFriendList.visibility = GONE
-        fabTrade.visibility = GONE
+        fabAlchemy.visibility = GONE
         fabAddFriend.visibility = GONE
         fabHelpPage.visibility = GONE
         // Set alpha to 0f for animation effect latter
         fabMyAccount.alpha = 0f
         fabFriendList.alpha = 0f
-        fabTrade.alpha = 0f
+        fabAlchemy.alpha = 0f
         fabAddFriend.alpha = 0f
         fabHelpPage.alpha = 0f
 
@@ -609,9 +626,10 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
             closeMenu()
             startActivity(Intent(this, SocialActivity::class.java))
         }
-        fabTrade.setOnClickListener {
-            Log.i(tag, "onClick: fab -> Trade")
+        fabAlchemy.setOnClickListener {
+            Log.i(tag, "onClick: fab -> Invitation")
             closeMenu()
+            startActivity(Intent(this, AlchemyActivity::class.java))
         }
         fabAddFriend.setOnClickListener {
             Log.i(tag, "onClick: fab -> addFriend")
@@ -637,7 +655,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
         fabMyAccount.visibility = View.VISIBLE
         fabFriendList.visibility = View.VISIBLE
-        fabTrade.visibility = View.VISIBLE
+        fabAlchemy.visibility = View.VISIBLE
         fabAddFriend.visibility = View.VISIBLE
         fabHelpPage.visibility = View.VISIBLE
 
@@ -655,7 +673,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 .setDuration(300)
                 .start()
 
-        fabTrade.animate()
+        fabAlchemy.animate()
                 .translationY(0f)
                 .alpha(1f)
                 .setInterpolator(interpolator)
@@ -703,7 +721,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 .setDuration(300)
                 .start()
 
-        fabTrade.animate()
+        fabAlchemy.animate()
                 .translationY(translationY)
                 .alpha(0f)
                 .setInterpolator(interpolator)
@@ -726,7 +744,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
         fabMyAccount.visibility = GONE
         fabFriendList.visibility = GONE
-        fabTrade.visibility = GONE
+        fabAlchemy.visibility = GONE
         fabAddFriend.visibility = GONE
         fabHelpPage.visibility = GONE
     }

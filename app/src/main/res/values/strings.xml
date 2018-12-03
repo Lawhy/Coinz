@@ -79,7 +79,33 @@
     <string name="_3_15_characters">3–15 characters</string>
     <string name="friend_email_list">Friend Email List</string>
     <string name="check_map_update">Check Map Update…</string>
-
+    <string name="scroll">scroll</string>
+    <string name="an_invitation">An Invitation</string>
+    <string name="click_here_to_know_more">Click here to know more…</string>
+    <string name="peny_fab">PENY:</string>
+    <string name="quid_fab">QUID:</string>
+    <string name="fab_dolr">DOLR:</string>
+    <string name="fab_shil">SHIL:</string>
+    <string name="slash">\\</string>
+    <string name="slash1">/</string>
+    <string name="click_the_buttons_to_fill_in_the_coins">(Click the buttons to fill in the coins)</string>
+    <string name="recipe">Recipe</string>
+    <string name="about_the_alchemy_recipe">About the Alchemy Recipe</string>
+    <string name="_1">1.</string>
+    <string name="ratio_">Ratio:</string>
+    <string name="ratio_description">A recipe would specify a combination of coins of the four types, e.g. SHIL: DOLR: QUID: PENNY = 5: 3: 2: 4.</string>
+    <string name="purity">Purity</string>
+    <string name="purity_description">The average values of the coins affects the purity of the combination, and purity directly affects the success rate.</string>
+    <string name="reward">Reward</string>
+    <string name="ratio">Ratio</string>
+    <string name="danger">Danger</string>
+    <string name="danger_description">Alchemical refinement is dangerous, you may lose everything you throw into the crucible or become much richer.</string>
+    <string name="reward_description">For successful refinement, all the input coins would take the maximum value 10, and directly transform to Gold with a high exchange rate. That is the reward.</string>
+    <string name="hint">Hint</string>
+    <string name="hint_description">Notice that refining high-value coins would be more reliable but less rewarding, and vice versa.</string>
+    <string name="background_story">The Grandmaster Alchemist Mr.DarkBrew decides to share his lifetime study by providing his Alchemical recipes to you. \n With an small amount of Gold payment, you can purchase the recipe (with difficulty level) and use the crucible to refine your coins, turning them into Gold whenever the requirement on the recipe is met…</string>
+    <string name="payment">Payment</string>
+    <string name="payment_description">The payment varies with the difficulty level of the recipe (i.e. how complicated the combination of coins would be), currently Easy: 500, Moderate: 1000, Difficult: 2000.</string>
 
 
 </resources>

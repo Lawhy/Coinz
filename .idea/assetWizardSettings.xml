@@ -18,6 +18,17 @@
                                 <PersistentState>
                                   <option name="children">
                                     <map>
+                                      <entry key="image">
+                                        <value>
+                                          <PersistentState>
+                                            <option name="values">
+                                              <map>
+                                                <entry key="paddingPercent" value="-10" />
+                                              </map>
+                                            </option>
+                                          </PersistentState>
+                                        </value>
+                                      </entry>
                                       <entry key="text">
                                         <value>
                                           <PersistentState>
@@ -46,8 +57,10 @@
                                   <option name="values">
                                     <map>
                                       <entry key="assetType" value="IMAGE" />
-                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\Hopstarter-Soft-Scraps-Button-Blank-Blue.ico" />
+                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\hexagram.png" />
                                       <entry key="outputName" value="ic_close" />
+                                      <entry key="theme" value="CUSTOM" />
+                                      <entry key="themeColor" value="0f0205" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -72,17 +85,6 @@
                                 <PersistentState>
                                   <option name="children">
                                     <map>
-                                      <entry key="image">
-                                        <value>
-                                          <PersistentState>
-                                            <option name="values">
-                                              <map>
-                                                <entry key="paddingPercent" value="5" />
-                                              </map>
-                                            </option>
-                                          </PersistentState>
-                                        </value>
-                                      </entry>
                                       <entry key="text">
                                         <value>
                                           <PersistentState>
@@ -109,12 +111,12 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="assetType" value="TEXT" />
+                                      <entry key="assetType" value="IMAGE" />
                                       <entry key="backgroundColor" value="aeccfe" />
                                       <entry key="cropped" value="true" />
-                                      <entry key="iconShape" value="HRECT" />
-                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\Hopstarter-Soft-Scraps-Button-Blank-Blue.ico" />
-                                      <entry key="outputName" value="ic_bank_btn" />
+                                      <entry key="iconShape" value="NONE" />
+                                      <entry key="imageAsset" value="C:\Users\msi-cn\AndroidStudioProjects\Coinz\app\src\main\res\drawable\hexagon.png" />
+                                      <entry key="outputName" value="ic_hexagram" />
                                     </map>
                                   </option>
                                 </PersistentState>
