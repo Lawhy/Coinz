@@ -21,18 +21,18 @@ class MyUtils {
      * 4. combineDrawable: Overlap two drawables and create a new one
      */
 
-    fun getCurrentDate():String {
+    fun getCurrentDate(): String {
         val current = LocalDateTime.now()
-        val formatter =  DateTimeFormatter.ofPattern("yyyy/MM/dd")
+        val formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd")
         val currentDate = current.format(formatter)
         Log.i("CurrentDate", currentDate)
         return currentDate.trim()
     }
 
 
-    fun symbolDrawable(context: Context, symbol: Int): Drawable?{
-        var icNumber : Drawable? = null
-        when(symbol) {
+    fun symbolDrawable(context: Context, symbol: Int): Drawable? {
+        var icNumber: Drawable? = null
+        when (symbol) {
             0 -> icNumber = getDrawable(context, R.drawable.ic_zero)
             1 -> icNumber = getDrawable(context, R.drawable.ic_one)
             2 -> icNumber = getDrawable(context, R.drawable.ic_two)

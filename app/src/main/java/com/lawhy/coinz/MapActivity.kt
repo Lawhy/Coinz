@@ -78,7 +78,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     private lateinit var fabAddFriend: FloatingActionButton
     private lateinit var fabHelpPage: FloatingActionButton
 
-    private var locationEngine : LocationEngine? = null
+    private var locationEngine: LocationEngine? = null
     private var locationLayerPlugin: LocationLayerPlugin? = null
 
     // Fire-base
@@ -95,7 +95,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     private val translationY = -100f
     private var isMenuOpen = false
     private var simpleIndex = 0 // simple index for coins in the wallet
-                                // usage: keep coins with the same coinID
+    // usage: keep coins with the same coinID
     private val interpolator = OvershootInterpolator()
     private var mapToday: String = ""
 
@@ -110,7 +110,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
     private var coinsOnMap = ArrayList<Coin>() // Store the coins' (on the map) information
     private var collectedCoins = ArrayList<Coin>() // Store the *current* collected coins
-                                                   // This means it is temporary.
+    // This means it is temporary.
     private var exchangeRates = HashMap<String, Any>() // Store today's exchange rates
 
     // Initialise a map date variable to check if the date has changed
@@ -165,17 +165,18 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         val alertDialog = AlertDialog.Builder(this)
         alertDialog.setTitle("Are you sure!")
         alertDialog.setMessage("Do you want to return to the login page?")
-        alertDialog.setPositiveButton("YES") { _,_ ->
+        alertDialog.setPositiveButton("YES") { _, _ ->
             mAuth?.signOut()
             val intent = Intent(this, AuthenticationActivity::class.java)
             finish()
-            startActivity(intent)}
-        alertDialog.setNegativeButton("NO") {_,_ -> }
+            startActivity(intent)
+        }
+        alertDialog.setNegativeButton("NO") { _, _ -> }
         alertDialog.show()
     }
 
     override fun onMapReady(mapboxMap: MapboxMap?) {
-        if(mapboxMap == null) {
+        if (mapboxMap == null) {
             Log.d(tag, "[onMapReady] mapboxMap is null")
         } else {
             map = mapboxMap
@@ -210,8 +211,10 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
     override fun onLocationChanged(location: Location?) {
 
-        if(location == null) { Log.d(tag, "[onLocationChanged] location is null")}
-        location?.let{
+        if (location == null) {
+            Log.d(tag, "[onLocationChanged] location is null")
+        }
+        location?.let {
             originLoaction = it
             setCameraPosition(it)
         }
@@ -277,7 +280,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
     override fun onSaveInstanceState(outState: Bundle?, outPersistentState: PersistableBundle?) {
         super.onSaveInstanceState(outState, outPersistentState)
-        if(outState != null) {
+        if (outState != null) {
             mapView.onSaveInstanceState(outState)
         }
     }
@@ -292,7 +295,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
      */
 
     private fun enableLocation() {
-        if (PermissionsManager.areLocationPermissionsGranted(this)){
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {
             Log.d(tag, "Permissions are grated")
             initializeLocationEngine()
             initializeLocationLayer()
@@ -351,7 +354,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
     }
 
-    private fun loadCoinzMap( ) {
+    private fun loadCoinzMap() {
 
         // Add Geo-json features on the map
         Log.i(tag, "Enable Coinz Map!")
@@ -376,12 +379,12 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
     }
 
-    private fun generateCoinOnMap(f: Feature): Coin?{
+    private fun generateCoinOnMap(f: Feature): Coin? {
 
         var coin: Coin? = null
 
         // Extract the properties
-        val properties:JsonObject? = f.properties()
+        val properties: JsonObject? = f.properties()
         if (properties == null) {
             Log.w(tag, "[MapGeneration] Empty properties for the current feature.")
             return null
@@ -398,7 +401,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         val colorFilter = LightingColorFilter(Color.parseColor(color), Color.parseColor(color))
         icMarker?.colorFilter = colorFilter
 
-        val icNumber : Drawable? = MyUtils().symbolDrawable(this, symbol)
+        val icNumber: Drawable? = MyUtils().symbolDrawable(this, symbol)
         val combinedDrawable = MyUtils().combineDrawable(icMarker, icNumber)
         val icon = MyUtils().drawableToIcon(this, combinedDrawable)
 
@@ -410,7 +413,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
             val pos = LatLng(point.latitude(), point.longitude())
             val marker = map.addMarker(MarkerOptions()
                     .title(currency)
-                    .snippet("Value: %.3f".format(value) )
+                    .snippet("Value: %.3f".format(value))
                     .icon(icon)
                     .position(pos))
 
@@ -420,9 +423,9 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         return coin
     }
 
-    private fun checkNearestCoin(location: Location) : Coin? {
+    private fun checkNearestCoin(location: Location): Coin? {
 
-        var nearestCoin : Coin? = null
+        var nearestCoin: Coin? = null
         val dists = ArrayList<Double>(coinsOnMap.size)
         coinsOnMap.stream().forEach { coin -> dists.add(coin.distToLocation(location)) }
 
@@ -468,7 +471,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
 
         // Find the index of the feature that contains the collected coin's information
         for (i in 1..features.length()) {
-            val feature = features.get(i-1) as JSONObject
+            val feature = features.get(i - 1) as JSONObject
             val properties = feature.get("properties") as JSONObject
             val id = collectedCoin.id
             val currency = collectedCoin.currency
@@ -477,7 +480,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                     && properties.get("currency") as String == currency
                     && properties.get("value") as String == value.toString()) {
                 Log.d(tag, "Coin: [$currency] of [$value] is about to be removed from mapToday.")
-                removeIndex = i-1
+                removeIndex = i - 1
                 break
             }
         }
@@ -491,7 +494,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         // upload the modified map to firestore
         firestore?.collection("maps")
                 ?.document(userEmail)
-                ?.set(mapOf("mapToday" to  mapToday))
+                ?.set(mapOf("mapToday" to mapToday))
                 ?.addOnSuccessListener {
                     Log.d(tag, "Map Today has been modified!")
                 }
@@ -591,7 +594,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
      * 3. closeMenu: Add animation effect on menu closed
      */
 
-    private fun initFabMenu(){
+    private fun initFabMenu() {
 
         // The three sub-buttons are invisible initially
         fabMyAccount.visibility = GONE
@@ -606,7 +609,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         fabAddFriend.alpha = 0f
         fabHelpPage.alpha = 0f
 
-        fabMenu.setOnClickListener{
+        fabMenu.setOnClickListener {
             Log.i(tag, "onClick: fab Menu")
             if (isMenuOpen) {
                 closeMenu()
@@ -639,6 +642,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         fabHelpPage.setOnClickListener {
             Log.i(tag, "onClick: fab -> helpPage")
             closeMenu()
+            startActivity(Intent(this, HelpPageActivity::class.java))
         }
 
     }

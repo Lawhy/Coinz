@@ -80,7 +80,7 @@ class SocialActivity : AppCompatActivity() {
         rankDocRef?.get()?.addOnSuccessListener {
             val rankingData = it.data
             if (rankingData.isNullOrEmpty()) {
-                Log.d(tag,"First Time loading ranking list or it is empty.")
+                Log.d(tag, "First Time loading ranking list or it is empty.")
                 setDataMaps() // First time displaying ranking list is slow.
             } else {
                 for (k in rankingData.keys) {
@@ -118,16 +118,16 @@ class SocialActivity : AppCompatActivity() {
             val editNickName: EditText = view.findViewById(R.id.editNickName)
             builder.setView(view)
             builder.setTitle("Your Name")
-            builder.setNegativeButton("Cancel") {_,_ -> }
-            builder.setPositiveButton("Confirm") {_, _ ->
+            builder.setNegativeButton("Cancel") { _, _ -> }
+            builder.setPositiveButton("Confirm") { _, _ ->
                 val curname: String = userNickNameView.text.toString()
                 val nickname: String = editNickName.text.toString()
                 // That is no change at all.
-                if(nickname == curname) {
+                if (nickname == curname) {
                     return@setPositiveButton
                 }
                 // Reject nickname that is too long or too short
-                if(nickname.length > 15 || nickname.length < 3) {
+                if (nickname.length > 15 || nickname.length < 3) {
                     Toast.makeText(this, "Name is too long or too short.", Toast.LENGTH_SHORT).show()
                     return@setPositiveButton
                 }
@@ -136,25 +136,25 @@ class SocialActivity : AppCompatActivity() {
                 val namesInPool = ArrayList<String>()
                 registeredNamesDoc?.get()
                         ?.addOnSuccessListener { snapshot ->
-                        val data = snapshot.data
-                        if (data.isNullOrEmpty()) {
-                            Log.i(tag, "No names in the data pool yet.")
-                            registeredNamesDoc.set(mapOf())
-                        } else {
-                            for (k in data.keys) {
-                                namesInPool.add(data[k].toString())
+                            val data = snapshot.data
+                            if (data.isNullOrEmpty()) {
+                                Log.i(tag, "No names in the data pool yet.")
+                                registeredNamesDoc.set(mapOf())
+                            } else {
+                                for (k in data.keys) {
+                                    namesInPool.add(data[k].toString())
+                                }
+                                Log.i(tag, "${namesInPool.size} names in the pool have been retrieved.")
                             }
-                            Log.i(tag, "${namesInPool.size} names in the pool have been retrieved.")
+                            if (namesInPool.contains(nickname)) {
+                                Log.i(tag, "Name has been used.")
+                                Toast.makeText(this, "Name has been occupied, please use another one.", Toast.LENGTH_SHORT).show()
+                            } else {
+                                // Change the nick name only when it is unique
+                                changeNickName(nickname)
+                                userNickNameView.text = nickname
+                            }
                         }
-                        if (namesInPool.contains(nickname)) {
-                            Log.i(tag, "Name has been used.")
-                            Toast.makeText(this, "Name has been occupied, please use another one.", Toast.LENGTH_SHORT).show()
-                        } else {
-                            // Change the nick name only when it is unique
-                            changeNickName(nickname)
-                            userNickNameView.text = nickname
-                        }
-                    }
             }
             builder.show()
         }
@@ -172,14 +172,17 @@ class SocialActivity : AppCompatActivity() {
                 ?.document("names")
                 ?.get()
                 ?.addOnSuccessListener {
-                    val data  = it.data
+                    val data = it.data
                     if (data.isNullOrEmpty()) {
                         Log.i(tag, "No name in the pool.")
                         userNickNameView.text = userEmail // Default name is the email
                     } else {
                         val nickname = data[userID].toString()
-                        if (nickname.isNotEmpty()) {userNickNameView.text = nickname}
-                        else {userNickNameView.text = userEmail} // Default name is the email
+                        if (nickname.isNotEmpty()) {
+                            userNickNameView.text = nickname
+                        } else {
+                            userNickNameView.text = userEmail
+                        } // Default name is the email
                         Log.i(tag, "$userEmail nick name is $nickname")
                     }
                 }
@@ -246,8 +249,9 @@ class SocialActivity : AppCompatActivity() {
 
         friendDocRef?.get()?.addOnSuccessListener {
             val friends = it.data?.values?.toList()
-            if (friends.isNullOrEmpty()){ Log.i(tag, "No friend at all.") }
-            else {
+            if (friends.isNullOrEmpty()) {
+                Log.i(tag, "No friend at all.")
+            } else {
                 //Count the user him/herself as a friend
                 val friendsAndMe = ArrayList<String>()
                 friendsAndMe.add(userEmail)
@@ -271,7 +275,7 @@ class SocialActivity : AppCompatActivity() {
                 ?.get()
                 ?.addOnSuccessListener { n ->
                     val nickname = n.data
-                    if(nickname.isNullOrEmpty()) {
+                    if (nickname.isNullOrEmpty()) {
                         Log.i(tag, "No name at all.")
                         nameMap[email] = email
                     } else {
@@ -293,12 +297,11 @@ class SocialActivity : AppCompatActivity() {
                 ?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if(data.isNullOrEmpty()) {
+                    if (data.isNullOrEmpty()) {
                         Log.i(tag, "No Gold info at all.")
                         goldMap[email] = 0.000
-                    }
-                    else {
-                        if(data["goldNumber"] != null) {
+                    } else {
+                        if (data["goldNumber"] != null) {
                             goldMap[email] = data["goldNumber"].toString().toDouble()
                         } else {
                             goldMap[email] = 0.000
@@ -321,7 +324,7 @@ class SocialActivity : AppCompatActivity() {
         rankedEmails.clear()
         Log.d(tag, "[NameMap] $nameMap")
         Log.d(tag, "[GoldMap] $goldMap")
-        rankedEmails += goldMap.toList().sortedBy { (_, value) -> value}.toMap().keys.toList().reversed()
+        rankedEmails += goldMap.toList().sortedBy { (_, value) -> value }.toMap().keys.toList().reversed()
         Log.d(tag, "[Ranking]: $rankedEmails")
         displayFriendsByRank()
 
@@ -364,7 +367,7 @@ class SocialActivity : AppCompatActivity() {
             val rankText = TextView(this)
             rankText.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 1F)
             rankText.gravity = Gravity.CENTER
-            rankText.text = (i+1).toString()
+            rankText.text = (i + 1).toString()
 
             // Name Displayed
             val nameText = TextView(this)

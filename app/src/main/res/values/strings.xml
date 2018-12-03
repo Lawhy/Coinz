@@ -105,7 +105,17 @@
     <string name="hint_description">Notice that refining high-value coins would be more reliable but less rewarding, and vice versa.</string>
     <string name="background_story">The Grandmaster Alchemist Mr.DarkBrew decides to share his lifetime study by providing his Alchemical recipes to you. \n With an small amount of Gold payment, you can purchase the recipe (with difficulty level) and use the crucible to refine your coins, turning them into Gold whenever the requirement on the recipe is met…</string>
     <string name="payment">Payment</string>
-    <string name="payment_description">The payment varies with the difficulty level of the recipe (i.e. how complicated the combination of coins would be), currently Easy: 500, Moderate: 1000, Difficult: 2000.</string>
+    <string name="payment_description">The payment varies with the difficulty level of the recipe (i.e. how complicated the combination of coins would be).</string>
+    <string name="update_user_s_data">Update User\'s Data…</string>
+    <string name="menu_button_description">A menu button for you to navigate to other activities.</string>
+    <string name="help_page">Help Page</string>
+    <string name="friend_list_description">To the friend/ranking list.</string>
+    <string name="my_account_description">To the personal account.</string>
+    <string name="fake_alchemy_description">To Mr.DarkBrew\'s invitation of Alchemy.</string>
+    <string name="friend_request_description">To the friend requests page.</string>
+    <string name="collect_description">Collect button, sending nearest coin (within 25 meters) into the wallet.</string>
+    <string name="to_the_help_page">To the help page.</string>
+    <string name="get_it">Get IT.</string>
 
 
 </resources>

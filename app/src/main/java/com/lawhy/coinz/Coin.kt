@@ -4,7 +4,7 @@ import android.location.Location
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.annotations.Marker
 
-class Coin( val id: String,val  currency: String,val value: Double, mapMarker: Marker?) {
+class Coin(val id: String, val currency: String, val value: Double, mapMarker: Marker?) {
 
     /** A very important class that preserves coins' information,
      *    1. id
@@ -18,7 +18,7 @@ class Coin( val id: String,val  currency: String,val value: Double, mapMarker: M
 
     // Coins can be collected within 25 meters
     // The only use of marker here is to provide location before collecting
-    fun distToLocation(location: Location): Double{
+    fun distToLocation(location: Location): Double {
         val curLatLng = LatLng(location.latitude, location.longitude)
         return curLatLng.distanceTo(this.marker?.position)
     }

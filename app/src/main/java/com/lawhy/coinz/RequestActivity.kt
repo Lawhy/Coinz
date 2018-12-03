@@ -87,7 +87,7 @@ class RequestActivity : AppCompatActivity() {
             val friendEmail: String = searchFriendView.text.toString()
 
             // Marginal case: user adds himself/herself as friend
-            if(friendEmail == userEmail) {
+            if (friendEmail == userEmail) {
                 Log.i(tag, "Cannot add yourself as a friend.")
                 Toast.makeText(this, "Cannot add yourself as a friend!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -95,22 +95,22 @@ class RequestActivity : AppCompatActivity() {
 
             // Check if the email exists in database
             emailDocRef?.get()?.addOnSuccessListener { snapShotEmails ->
-                        val data = snapShotEmails.data
-                        if(data.isNullOrEmpty()) {
-                            Log.wtf(tag, "No email reference in database!")
-                        } else {
-                            for (id in data.keys) {
-                                val em = data[id]
-                                if (em == friendEmail) {
-                                    checkIsFriendThenSend(friendEmail)
-                                    Log.d(tag, "Found email in database.")
-                                    return@addOnSuccessListener
-                                }
-                            }
-                            // Inform user that searched account doesn't exist and clear the input text
-                            Toast.makeText(this, "Searched account does not exist!", Toast.LENGTH_SHORT).show()
-                            searchFriendView.text.clear()
+                val data = snapShotEmails.data
+                if (data.isNullOrEmpty()) {
+                    Log.wtf(tag, "No email reference in database!")
+                } else {
+                    for (id in data.keys) {
+                        val em = data[id]
+                        if (em == friendEmail) {
+                            checkIsFriendThenSend(friendEmail)
+                            Log.d(tag, "Found email in database.")
+                            return@addOnSuccessListener
                         }
+                    }
+                    // Inform user that searched account doesn't exist and clear the input text
+                    Toast.makeText(this, "Searched account does not exist!", Toast.LENGTH_SHORT).show()
+                    searchFriendView.text.clear()
+                }
             }?.addOnFailureListener { e -> Log.wtf(tag, e.message) }
 
         }
@@ -122,8 +122,9 @@ class RequestActivity : AppCompatActivity() {
         friendDocRef?.get()?.addOnSuccessListener {
             var notFriend = true
             val friendList = it.data
-            if (friendList.isNullOrEmpty()) {friendDocRef?.set(mapOf())}
-            else {
+            if (friendList.isNullOrEmpty()) {
+                friendDocRef?.set(mapOf())
+            } else {
                 for (em in friendList.values) {
                     if (friendEmail == em) {
                         notFriend = false
@@ -134,8 +135,7 @@ class RequestActivity : AppCompatActivity() {
             // different results for is/not a friend
             if (notFriend) {
                 sendFriendRequest(friendEmail)
-            }
-            else {
+            } else {
                 Log.i(tag, "Friend already exists.")
                 Toast.makeText(this, "Friend already exists.", Toast.LENGTH_SHORT).show()
             }
@@ -158,7 +158,7 @@ class RequestActivity : AppCompatActivity() {
                     Toast.makeText(this, "Friend request sent successfully!", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                val index:Int = requests.size
+                val index: Int = requests.size
                 Log.d(tag, "Update friend request.")
                 friendRequestDoc.update(mapOf(index.toString() to userEmail))
                         .addOnSuccessListener {
@@ -187,7 +187,7 @@ class RequestActivity : AppCompatActivity() {
                 }
                 updateFriendRequestsView(emailsFromRequests)
             }
-        } ?.addOnFailureListener { Log.wtf(tag, it.message) }
+        }?.addOnFailureListener { Log.wtf(tag, it.message) }
 
     }
 
@@ -285,12 +285,12 @@ class RequestActivity : AppCompatActivity() {
                 val alertDialog = AlertDialog.Builder(this)
                 alertDialog.setTitle("Are you sure?")
                 alertDialog.setMessage("Decline the friend request from $em.")
-                alertDialog.setPositiveButton("YES"){ _,_ ->
+                alertDialog.setPositiveButton("YES") { _, _ ->
                     // Remove the request and update the online storage
                     emails.remove(em)
                     updateFriendRequests(emails)
                 }
-                alertDialog.setNegativeButton("NO") {_,_ ->}
+                alertDialog.setNegativeButton("NO") { _, _ -> }
                 alertDialog.show()
             }
         }

@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
+
 class DataActivity : AppCompatActivity() {
 
     /** This activity prepares necessary data before delivering the map,
@@ -66,7 +67,7 @@ class DataActivity : AppCompatActivity() {
             putExtra("lastDownloadDate", lastDownloadDate)
         }
 
-        if(firstDownloadToday) {
+        if (firstDownloadToday) {
             mapToday = DownloadActivity.result
             if (mapToday.isNullOrEmpty()) {
                 Log.d(tag, "No Coinz Map downloaded!")
@@ -81,7 +82,7 @@ class DataActivity : AppCompatActivity() {
                     ?.addOnSuccessListener {
                         Log.d(tag, "Map today has been refreshed!")
                     }
-                    ?.addOnFailureListener{
+                    ?.addOnFailureListener {
                         Log.w(tag, "Failure on map renewal! Go Check!", it)
                         Toast.makeText(this, "Something wrong happened!",
                                 Toast.LENGTH_SHORT).show()
@@ -109,15 +110,15 @@ class DataActivity : AppCompatActivity() {
                                         val alertDialog = AlertDialog.Builder(this)
                                         alertDialog.setTitle("Data is incorrect!")
                                         alertDialog.setMessage("Please return to the login and try again")
-                                        alertDialog.setPositiveButton("YES") { _,_ ->
+                                        alertDialog.setPositiveButton("YES") { _, _ ->
                                             val accidentalIntent = Intent(this, AuthenticationActivity::class.java)
                                             accidentalIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                                             startActivity(accidentalIntent)
                                         }
-                                        alertDialog.setNegativeButton("NO") {_,_ -> moveTaskToBack(true)}
+                                        alertDialog.setNegativeButton("NO") { _, _ -> moveTaskToBack(true) }
                                         alertDialog.show()
                                     }
-                                    ?.addOnFailureListener{
+                                    ?.addOnFailureListener {
                                         Log.wtf(tag, it)
                                     }
                         } else {
@@ -129,7 +130,7 @@ class DataActivity : AppCompatActivity() {
                             startActivity(intent)
                         }
                     }
-                    ?.addOnFailureListener{
+                    ?.addOnFailureListener {
                         Log.w(tag, "Failure on map clean! Go Check!", it)
                         Toast.makeText(this, it.message, Toast.LENGTH_SHORT).show()
                     }
@@ -142,11 +143,12 @@ class DataActivity : AppCompatActivity() {
         val alertDialog = AlertDialog.Builder(this)
         alertDialog.setTitle("Are you sure!")
         alertDialog.setMessage("Do you want to abandon the update?")
-        alertDialog.setPositiveButton("YES") { _,_ ->
+        alertDialog.setPositiveButton("YES") { _, _ ->
             val intent = Intent(this, AuthenticationActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(intent)}
-        alertDialog.setNegativeButton("NO") {_,_ -> }
+            startActivity(intent)
+        }
+        alertDialog.setNegativeButton("NO") { _, _ -> }
         alertDialog.show()
     }
 }

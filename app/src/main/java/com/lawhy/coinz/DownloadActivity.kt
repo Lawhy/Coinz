@@ -11,7 +11,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreSettings
 
 
-class DownloadActivity : AppCompatActivity(), DownloadCompleteListener{
+class DownloadActivity : AppCompatActivity(), DownloadCompleteListener {
 
     /** This activity provides downloading of new map if ${firstDownloadToday} is true.
      * ${firstDownloadToday} will be checked by the downloadDate taken from fire-store:
@@ -63,17 +63,18 @@ class DownloadActivity : AppCompatActivity(), DownloadCompleteListener{
         val alertDialog = AlertDialog.Builder(this)
         alertDialog.setTitle("Are you sure!")
         alertDialog.setMessage("Do you want to abandon the update?")
-        alertDialog.setPositiveButton("YES") { _,_ ->
+        alertDialog.setPositiveButton("YES") { _, _ ->
             val intent = Intent(this, AuthenticationActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            startActivity(intent)}
-        alertDialog.setNegativeButton("NO") {_,_ -> }
+            startActivity(intent)
+        }
+        alertDialog.setNegativeButton("NO") { _, _ -> }
         alertDialog.show()
     }
 
     // Download Result that will be sent to Data Activity
-    companion object{
-        var result : String? = null
+    companion object {
+        var result: String? = null
     }
 
     override fun downloadComplete(result: String, intent: Intent) {
@@ -85,7 +86,7 @@ class DownloadActivity : AppCompatActivity(), DownloadCompleteListener{
 
 
     // read the download date from firestore, empty string if there is none
-    private fun downloadIfFirst(){
+    private fun downloadIfFirst() {
 
         Log.d(tag, "Current user email: $userEmail")
         firestore?.collection("pool")
@@ -107,7 +108,7 @@ class DownloadActivity : AppCompatActivity(), DownloadCompleteListener{
                         putExtra("firstDownloadToday", firstDownloadToday)
                         putExtra("lastDownloadDate", lastDownloadDate)
                     }
-                    if(firstDownloadToday) {
+                    if (firstDownloadToday) {
                         // Download the map today and initialize everything
                         DownloadFileTask(this, intent)
                                 .execute("http://homepages.inf.ed.ac.uk/stg/coinz/$currentDate/coinzmap.geojson")
@@ -119,7 +120,7 @@ class DownloadActivity : AppCompatActivity(), DownloadCompleteListener{
                 }
     }
 
-    private fun checkFirstDownloadToday(): String{
+    private fun checkFirstDownloadToday(): String {
 
         Log.d(tag, "dd: $downloadDate")
         Log.d(tag, "cd: $currentDate")
@@ -132,7 +133,7 @@ class DownloadActivity : AppCompatActivity(), DownloadCompleteListener{
                     ?.addOnSuccessListener {
                         Log.d("[DownloadDateUpdate]", currentDate)
                     }
-                    ?.addOnFailureListener{
+                    ?.addOnFailureListener {
                         Log.d("[DownloadDateUpdate]", "Failure! Go Check!")
                     }
         } else {

@@ -35,7 +35,8 @@
         <activity android:name=".MyAccountActivity" />
         <activity android:name=".SocialActivity" />
         <activity android:name=".RequestActivity" />
-        <activity android:name=".AlchemyActivity"></activity>
+        <activity android:name=".AlchemyActivity" />
+        <activity android:name=".HelpPageActivity" />
     </application>
 
 </manifest>

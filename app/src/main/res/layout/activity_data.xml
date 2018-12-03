@@ -30,7 +30,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:text="Update User's Data..."
+        android:text="@string/update_user_s_data"
         android:textColor="@color/colorAccent"
         app:layout_constraintBottom_toTopOf="@+id/progressBarData"
         app:layout_constraintEnd_toEndOf="parent"

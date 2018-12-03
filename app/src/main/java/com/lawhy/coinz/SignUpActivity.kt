@@ -51,7 +51,7 @@ class SignUpActivity : AppCompatActivity() {
 
         // CloseBtn
         val closeBtn = findViewById<ImageButton>(R.id.closeSuBtn)
-        closeBtn.setOnClickListener { startActivity(Intent(this, MainActivity::class.java))  }
+        closeBtn.setOnClickListener { startActivity(Intent(this, MainActivity::class.java)) }
     }
 
     private fun registerUser() {
@@ -75,7 +75,7 @@ class SignUpActivity : AppCompatActivity() {
                     } else {
                         // If sign in fails, display a message to the user.
                         Log.w(tag, "createUserWithEmail:failure", task.exception)
-                        if(task.exception is FirebaseAuthUserCollisionException) {
+                        if (task.exception is FirebaseAuthUserCollisionException) {
                             Toast.makeText(this, "The account has already existed!",
                                     Toast.LENGTH_SHORT).show()
                         } else {
@@ -87,7 +87,7 @@ class SignUpActivity : AppCompatActivity() {
 
     }
 
-    private fun checkValidSignUp(email:String, password:String, confirm:String):Boolean {
+    private fun checkValidSignUp(email: String, password: String, confirm: String): Boolean {
         // Handle the empty strings & wrong format cases
         if (email.isEmpty()) {
             emailText.error = "Email is required!"
@@ -101,27 +101,27 @@ class SignUpActivity : AppCompatActivity() {
             return false
         }
 
-        if(password.isEmpty()) {
+        if (password.isEmpty()) {
             passwordText.error = "Password is required"
             passwordText.requestFocus()
             return false
         }
 
         // A password requires at least 6 characters
-        if(password.length<6) {
+        if (password.length < 6) {
             passwordText.error = "Minimum length of password should be 6"
             passwordText.requestFocus()
             return false
         }
 
-        if(confirm.isEmpty()) {
+        if (confirm.isEmpty()) {
             confirmText.error = "Please re-enter your password"
             confirmText.requestFocus()
             return false
         }
 
         // Need to confirm the password correctly
-        if(confirm != password) {
+        if (confirm != password) {
             confirmText.error = "Check any typo! The passwords do not match"
             confirmText.requestFocus()
             return false

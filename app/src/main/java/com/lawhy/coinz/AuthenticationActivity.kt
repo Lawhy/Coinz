@@ -9,7 +9,7 @@ import android.view.View
 import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 
-class AuthenticationActivity : AppCompatActivity(){
+class AuthenticationActivity : AppCompatActivity() {
 
     /** This activity uses fire-base authentication to check valid login,
      *  if valid, go to DownloadActivity to retrieve today's map.
@@ -39,7 +39,7 @@ class AuthenticationActivity : AppCompatActivity(){
         startActivity(Intent(this, MainActivity::class.java))
     }
 
-    private fun mySetOnClick(){
+    private fun mySetOnClick() {
 
         // SignInBtn
         val signInBtn: Button = findViewById(R.id.AutSignInBtn)
@@ -53,7 +53,8 @@ class AuthenticationActivity : AppCompatActivity(){
         val closeBtn: ImageButton = findViewById(R.id.closeAutBtn)
         closeBtn.setOnClickListener {
             finish()
-            startActivity(Intent(this, MainActivity::class.java)) }
+            startActivity(Intent(this, MainActivity::class.java))
+        }
     }
 
     private fun userLoginIn() {
@@ -65,7 +66,7 @@ class AuthenticationActivity : AppCompatActivity(){
 
         mAuth?.signInWithEmailAndPassword(email, password)?.addOnCompleteListener { task ->
             progressBar.visibility = View.GONE
-            if(task.isSuccessful){
+            if (task.isSuccessful) {
                 Log.d(tag, "Successfully log in!")
                 // Go to next activity for successful login
                 val intent = Intent(this, DownloadActivity::class.java)
@@ -93,14 +94,14 @@ class AuthenticationActivity : AppCompatActivity(){
             return false
         }
 
-        if(password.isEmpty()) {
+        if (password.isEmpty()) {
             passwordText.error = "Password is required"
             passwordText.requestFocus()
             return false
         }
 
         // A password requires at least 6 characters
-        if(password.length<6) {
+        if (password.length < 6) {
             passwordText.error = "Minimum length of password should be 6"
             passwordText.requestFocus()
             return false

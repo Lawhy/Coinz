@@ -21,14 +21,14 @@ class DownloadFileTask(private val caller: DownloadCompleteListener,
      *  2. intent leads to next activity.
      * */
 
-    override fun doInBackground(vararg urls: String): String = try{
+    override fun doInBackground(vararg urls: String): String = try {
         loadFileFromNetwork(urls[0])
-    } catch (e: IOException){
+    } catch (e: IOException) {
         "Unable to load the content. Please check your network connection."
     }
 
     private fun loadFileFromNetwork(urlString: String): String {
-        val stream : InputStream = downloadUrl(urlString)
+        val stream: InputStream = downloadUrl(urlString)
         // read input from the stream, read the result as a string
         val result = stream.bufferedReader().use { it.readText() }
         stream.close()

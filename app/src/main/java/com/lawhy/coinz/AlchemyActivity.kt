@@ -133,15 +133,18 @@ class AlchemyActivity : AppCompatActivity() {
 
         knowMoreBtn.setOnClickListener {
             // Build a dialog for displaying the help page
-            val knowMoreDialog = AlertDialog.Builder(this@AlchemyActivity)
+            val knowMoreDialogBuilder = AlertDialog.Builder(this@AlchemyActivity)
             val view = View.inflate(this, R.layout.know_more_alchemy_dialog, null)
-            knowMoreDialog.setView(view)
-            knowMoreDialog.setPositiveButton("Get it.") {_, _ -> }
+            knowMoreDialogBuilder.setView(view)
+            val knowMoreDialog: AlertDialog = knowMoreDialogBuilder.create()
+            val getItBtn: Button = view.findViewById(R.id.getItBtn)
+            getItBtn.setOnClickListener {
+                knowMoreDialog.dismiss()  // Customized dismiss button
+            }
             knowMoreDialog.show()
         }
 
     }
-
 
 
 }

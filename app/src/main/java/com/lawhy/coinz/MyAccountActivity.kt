@@ -146,15 +146,15 @@ class MyAccountActivity : AppCompatActivity() {
         xrDOLR = findViewById(R.id.xrDOLR)
 
         // QUID
-        localQUID = findViewById(R.id.localQUID )
-        foreignQUID  = findViewById(R.id.foreignQUID )
-        valQUID  = findViewById(R.id.valQUID )
-        xrQUID  = findViewById(R.id.xrQUID )
+        localQUID = findViewById(R.id.localQUID)
+        foreignQUID = findViewById(R.id.foreignQUID)
+        valQUID = findViewById(R.id.valQUID)
+        xrQUID = findViewById(R.id.xrQUID)
 
         // PENY
         localPENY = findViewById(R.id.localPENY)
         foreignPENY = findViewById(R.id.foreignPENY)
-        valPENY= findViewById(R.id.valPENY)
+        valPENY = findViewById(R.id.valPENY)
         xrPENY = findViewById(R.id.xrPENY)
 
         dayOfWeekView = findViewById(R.id.dayOfWeek)
@@ -178,21 +178,24 @@ class MyAccountActivity : AppCompatActivity() {
                 ?.addOnSuccessListener {
                     val data = it.data
                     if (data.isNullOrEmpty()) {
-                        Log.i(tag,"No gold/bank number information.")
+                        Log.i(tag, "No gold/bank number information.")
                         val originalMap = HashMap<String, Any>()
                         originalMap["goldNumber"] = 0.000
                         originalMap["bankedNumber"] = 0
                         goldDocRef?.set(originalMap)
 
                     } else {
-                        if(mapDate != MyUtils().getCurrentDate()) {
+                        if (mapDate != MyUtils().getCurrentDate()) {
                             Log.i(tag, "Renew banked number for a new day!")
                             mapDate = MyUtils().getCurrentDate()
                             bankedNum = 0
                             goldDocRef?.update(mapOf("bankedNumber" to 0))
                         } else {
-                            bankedNum = if (data.keys.contains("bankedNumber"))
-                            { data["bankedNumber"].toString().toInt() } else { 0 }
+                            bankedNum = if (data.keys.contains("bankedNumber")) {
+                                data["bankedNumber"].toString().toInt()
+                            } else {
+                                0
+                            }
                             Log.i(tag, "The banked coin number is $bankedNum")
                         }
                     }
@@ -206,7 +209,7 @@ class MyAccountActivity : AppCompatActivity() {
         bankNumberView.text = "You have banked $bankedNum coins today (Limit: 25)."
 
         goldDocRef?.update(mapOf("bankedNumber" to bankedNum))
-                ?.addOnSuccessListener{ Log.i(tag, "Banked Coin Number has been uploaded to Database.")}
+                ?.addOnSuccessListener { Log.i(tag, "Banked Coin Number has been uploaded to Database.") }
                 ?.addOnFailureListener { Log.wtf(tag, "Banked Coin Number cannot be uploaded!") }
 
     }
@@ -225,7 +228,7 @@ class MyAccountActivity : AppCompatActivity() {
                         goldDocRef?.set(originalMap)
                                 ?.addOnSuccessListener { Log.i(tag, "Init Gold Number in account.") }
                                 ?.addOnFailureListener { Log.wtf(tag, "Gold Number cannot be initialised!") }
-                    } else  {
+                    } else {
                         goldNumber = data["goldNumber"].toString().toDouble()
                         goldNumberView.text = "%.3f".format(goldNumber)
                         Log.i(tag, "Account has Gold %.3f".format(goldNumber))
@@ -240,7 +243,7 @@ class MyAccountActivity : AppCompatActivity() {
 
         // Upload gold number to fire-store
         goldDocRef?.update(mapOf("goldNumber" to goldNumber))
-                ?.addOnSuccessListener { Log.i(tag, "Gold Number has been updated!")}
+                ?.addOnSuccessListener { Log.i(tag, "Gold Number has been updated!") }
                 ?.addOnFailureListener { Log.wtf(tag, "Gold Number cannot be updated!") }
 
         // Display gold number in 3 s.f.
@@ -326,8 +329,10 @@ class MyAccountActivity : AppCompatActivity() {
         // Attach local coin values
         for (coin in wallet.coins) {
             val currency = coin.currency
-            when(currency) {
-                "SHIL" -> {valS += coin.value}
+            when (currency) {
+                "SHIL" -> {
+                    valS += coin.value
+                }
                 "DOLR" -> valD += coin.value
                 "QUID" -> valQ += coin.value
                 "PENY" -> valP += coin.value
@@ -338,8 +343,10 @@ class MyAccountActivity : AppCompatActivity() {
         // Attach foreign coin values
         for (coin in wallet.foreignCoins) {
             val currency = coin.currency
-            when(currency) {
-                "SHIL" -> {valS += coin.value}
+            when (currency) {
+                "SHIL" -> {
+                    valS += coin.value
+                }
                 "DOLR" -> valD += coin.value
                 "QUID" -> valQ += coin.value
                 "PENY" -> valP += coin.value
@@ -362,7 +369,7 @@ class MyAccountActivity : AppCompatActivity() {
 
         for (coin in wallet.coins) {
             val currency = coin.currency
-            when(currency) {
+            when (currency) {
                 "SHIL" -> localS += 1
                 "DOLR" -> localD += 1
                 "QUID" -> localQ += 1
@@ -382,12 +389,12 @@ class MyAccountActivity : AppCompatActivity() {
 
         var foreignS = 0
         var foreignD = 0
-        var foreignQ= 0
+        var foreignQ = 0
         var foreignP = 0
 
         for (coin in wallet.foreignCoins) {
             val currency = coin.currency
-            when(currency) {
+            when (currency) {
                 "SHIL" -> foreignS += 1
                 "DOLR" -> foreignD += 1
                 "QUID" -> foreignQ += 1
@@ -522,20 +529,20 @@ class MyAccountActivity : AppCompatActivity() {
             val alertDialog = AlertDialog.Builder(this)
             alertDialog.setTitle("Sure to bank this coin?")
             alertDialog.setMessage("${coin.currency}: %.3f".format(coin.value))
-            alertDialog.setPositiveButton("YES") { _,_ ->
+            alertDialog.setPositiveButton("YES") { _, _ ->
                 val gain = if (isForeign) {
                     bankForeignCoin(coin)
                 } else {
                     bankCoin(coin)
                 }
-                if(gain > 0) {
+                if (gain > 0) {
                     Log.i(tag, "Gained Gold $gain")
                     updateGoldStat(increase = gain)
                 } else {
                     Log.i(tag, "Coin is not allowed to banked.")
                 }
             }
-            alertDialog.setNegativeButton("NO") {_,_ -> }
+            alertDialog.setNegativeButton("NO") { _, _ -> }
             alertDialog.show()
         }
     }
@@ -545,7 +552,6 @@ class MyAccountActivity : AppCompatActivity() {
         sendBtn.setOnClickListener {
 
             val alertDialog = AlertDialog.Builder(this@MyAccountActivity)
-            alertDialog.setTitle("Sure to send this coin?")
             val view = View.inflate(this, R.layout.send_coin_dialog, null)
             val friendsLayout: TableLayout = view.findViewById(R.id.sendCoinFriendList) // Display friend list on this layout
             var choiceToSend = "" // For one send request, only one choice of email.
@@ -573,7 +579,7 @@ class MyAccountActivity : AppCompatActivity() {
                             textName.background = getDrawable(R.color.mapbox_blue) // Highlight the choice
                             choiceToSend = em.toString()
                             for (tv in textNameViews) {
-                                if(tv != textName){
+                                if (tv != textName) {
                                     tv.background = getDrawable(R.color.transparent) // Unhighlight the rest
                                 }
                             }
@@ -585,10 +591,10 @@ class MyAccountActivity : AppCompatActivity() {
                     }
 
                 }
-            } ?.addOnFailureListener { e -> Log.wtf(tag, e.message) }
+            }?.addOnFailureListener { e -> Log.wtf(tag, e.message) }
 
             // Send the coin to the target friend
-            alertDialog.setPositiveButton ("Send") {_,_ ->
+            alertDialog.setPositiveButton("Send") { _, _ ->
                 if (choiceToSend == "") {
                     Toast.makeText(this, "Please select someone body!", Toast.LENGTH_SHORT).show()
                 } else {
@@ -596,7 +602,7 @@ class MyAccountActivity : AppCompatActivity() {
                     Toast.makeText(this, "Coin sent to $choiceToSend", Toast.LENGTH_SHORT).show()
                 }
             }
-            alertDialog.setNegativeButton("Cancel") { _,_ -> }
+            alertDialog.setNegativeButton("Cancel") { _, _ -> }
             alertDialog.setView(view)
             alertDialog.show()
         }
@@ -639,7 +645,7 @@ class MyAccountActivity : AppCompatActivity() {
     private fun bankCoin(coinToBank: Coin): Double {
 
         // Bank only happens before exceeding the limit of 25 coins
-        if(bankedNum <= bankLIMIT) {
+        if (bankedNum <= bankLIMIT) {
             val xr = exchangeRates[coinToBank.currency].toString().toDouble()
             val value = coinToBank.value
             wallet.coins.remove(coinToBank)
