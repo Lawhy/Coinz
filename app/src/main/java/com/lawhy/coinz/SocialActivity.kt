@@ -251,6 +251,9 @@ class SocialActivity : AppCompatActivity() {
             val friends = it.data?.values?.toList()
             if (friends.isNullOrEmpty()) {
                 Log.i(tag, "No friend at all.")
+                val me = ArrayList<String>()
+                me.add(userEmail)
+                updateNameMap(me)
             } else {
                 //Count the user him/herself as a friend
                 val friendsAndMe = ArrayList<String>()

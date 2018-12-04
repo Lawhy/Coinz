@@ -147,12 +147,12 @@ class AlchemyActivity : AppCompatActivity() {
                                     wallet.addForeign(foreignCoin) // Add the foreign coins into the wallet
                                 }
                             }
-                            // Now the wallet is prepared
-                            walletProgressBar.visibility = View.GONE
-                            hexagramEntrance.visibility = View.VISIBLE
-                            setFabToRecipe() // set this fab here because coins information needs be sent to Recipe Activity
                         }
                     }
+                    // Now the wallet is prepared
+                    walletProgressBar.visibility = View.GONE
+                    hexagramEntrance.visibility = View.VISIBLE
+                    setFabToRecipe() // set this fab here because coins information needs be sent to Recipe Activity
                 }
     }
 

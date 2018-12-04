@@ -514,6 +514,13 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
             Toast.makeText(this, "It's $day now! Use your coins!", Toast.LENGTH_SHORT).show()
         }
 
+        // Check null value for brand new account.
+        if (lastDownloadDate == "null") {
+            Log.d(tag, "Brand new account.")
+            firstTimeLaunch = false // set this boolean to false to prevent overlapped renewal
+            return
+        }
+
         // Checking if the last download date is before this week's Monday, if so, clean the coins
         val parsedDate = LocalDate.parse(lastDownloadDate, DateTimeFormatter.ofPattern("yyyy/MM/dd"))
         val dateNow = LocalDate.now()

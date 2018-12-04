@@ -289,6 +289,7 @@ class RequestActivity : AppCompatActivity() {
                     // Remove the request and update the online storage
                     emails.remove(em)
                     updateFriendRequests(emails)
+                    updateFriendRequestsView(emails)
                 }
                 alertDialog.setNegativeButton("NO") { _, _ -> }
                 alertDialog.show()

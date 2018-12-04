@@ -650,7 +650,10 @@ class MyAccountActivity : AppCompatActivity() {
             val xr = exchangeRates[coinToBank.currency].toString().toDouble()
             val value = coinToBank.value
             wallet.coins.remove(coinToBank)
+            // Update the view displaying the local coins
             updateCoinsListView(wallet)
+            updateValue(wallet)
+            updateLocal(wallet)
             // Replacing the online wallet by local wallet
             coinsDocRef
                     ?.set(mapOf()) // First remove everything
@@ -666,8 +669,6 @@ class MyAccountActivity : AppCompatActivity() {
                                     ?.update(mapOf("$i" to coinMap))
                                     ?.addOnSuccessListener {
                                         Log.i(tag, "${i}th coin has been renewed")
-                                        updateValue(wallet)
-                                        updateLocal(wallet)
                                     }
                         }
                     }
@@ -689,7 +690,10 @@ class MyAccountActivity : AppCompatActivity() {
         val xr = exchangeRates[foreignCoinToBank.currency].toString().toDouble()
         val value = foreignCoinToBank.value
         wallet.foreignCoins.remove(foreignCoinToBank)
+        // Update the view displaying the foreign coins
         updateForeignCoinsListView(wallet)
+        updateValue(wallet)
+        updateForeign(wallet)
 
         // update the online storage of foreign coins
         foreignCoinsDocRef
@@ -706,8 +710,6 @@ class MyAccountActivity : AppCompatActivity() {
                                 ?.update(mapOf("$i" to coinMap))
                                 ?.addOnSuccessListener {
                                     Log.i(tag, "${i}th foreign coin has been renewed")
-                                    updateValue(wallet)
-                                    updateForeign(wallet)
                                 }
 
                     }
