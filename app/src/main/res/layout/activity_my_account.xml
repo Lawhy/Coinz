@@ -22,11 +22,11 @@
         <TableRow>
 
             <ImageView
-                android:contentDescription="@string/icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@android:color/holo_orange_dark"
+                android:contentDescription="@string/icon"
                 android:gravity="center"
                 app:srcCompat="@drawable/gold" />
 
@@ -331,11 +331,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="48dp"
+        android:isScrollContainer="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/dayOfWeek"
-        android:isScrollContainer="false">
+        app:layout_constraintTop_toTopOf="@+id/dayOfWeek">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -368,12 +368,12 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
+        android:isScrollContainer="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/localScroll"
-        android:isScrollContainer="false">
+        app:layout_constraintTop_toBottomOf="@+id/localScroll">
 
         <LinearLayout
             android:layout_width="match_parent"

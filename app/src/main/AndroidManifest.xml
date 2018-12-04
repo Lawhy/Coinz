@@ -37,6 +37,7 @@
         <activity android:name=".RequestActivity" />
         <activity android:name=".AlchemyActivity" />
         <activity android:name=".HelpPageActivity" />
+        <activity android:name=".RecipeActivity" />
     </application>
 
 </manifest>

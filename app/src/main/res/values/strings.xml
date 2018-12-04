@@ -105,7 +105,7 @@
     <string name="hint_description">Notice that refining high-value coins would be more reliable but less rewarding, and vice versa.</string>
     <string name="background_story">The Grandmaster Alchemist Mr.DarkBrew decides to share his lifetime study by providing his Alchemical recipes to you. \n With an small amount of Gold payment, you can purchase the recipe (with difficulty level) and use the crucible to refine your coins, turning them into Gold whenever the requirement on the recipe is met…</string>
     <string name="payment">Payment</string>
-    <string name="payment_description">The payment varies with the difficulty level of the recipe (i.e. how complicated the combination of coins would be).</string>
+    <string name="payment_description">The payment (300, 500, 1000) varies with possible reward of the recipe (i.e. higher payment is more likely to give rewarding recipe).</string>
     <string name="update_user_s_data">Update User\'s Data…</string>
     <string name="menu_button_description">A menu button for you to navigate to other activities.</string>
     <string name="help_page">Help Page</string>
@@ -116,6 +116,26 @@
     <string name="collect_description">Collect button, sending nearest coin (within 25 meters) into the wallet.</string>
     <string name="to_the_help_page">To the help page.</string>
     <string name="get_it">Get IT.</string>
+    <string name="noble_1000_gold">Noble (1000 Gold):</string>
+    <string name="buy">Buy.</string>
+    <string name="master_1000_gold">Master (1000 Gold)</string>
+    <string name="expert_500_gold">Expert (500 Gold):</string>
+    <string name="normal_300_gold">Normal (300 Gold):</string>
+    <string name="select">Select</string>
+    <string name="pay">Pay</string>
+    <string name="value_">Value:</string>
+    <string name="purity_100">Purity: 100%</string>
+    <string name="purity_">Purity:</string>
+    <string name="percent">%</string>
+    <string name="_100">100</string>
+    <string name="foreign_coins_list">Foreign Coins List</string>
+    <string name="local_coins_list">Local Coins List</string>
+    <string name="selected_0">Selected: 0</string>
+    <string name="noting">Noting</string>
+    <string name="refine">Refine</string>
+    <string name="result_capital">RESULT</string>
+    <string name="lose_description">You lose all the coins   thrown into the crucible!</string>
+    <string name="recipe_store">Recipe Store</string>
 
 
 </resources>

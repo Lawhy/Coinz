@@ -10,10 +10,17 @@
     <color name="trans_white">#96ffffff</color>
     <color name="pinky">#ff5d5e</color>
     <color name="transparent">#00F0F8FF</color>
-    
+
     //mapbox colors
     <color name="mapboxWhite">#ffffff</color>
     <color name="mapboxBlue">#4264fb</color>
     <color name="mapboxGrayLight">#c6d2e1</color>
+    <color name="orange">#ff8e16</color>
+
+    // Colors for coins of different currency
+    <color name="SHILcolor">#C51B4CBE</color>
+    <color name="DOLRcolor">#99cc00</color>
+    <color name="QUIDcolor">#ffbb33</color>
+    <color name="PENYcolor">#ff4444</color>
 
 </resources>

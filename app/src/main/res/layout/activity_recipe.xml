@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/scroll"
+    android:background="@drawable/scroll2"
     android:gravity="center">
 
     <TableRow
@@ -15,7 +15,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:gravity="center"
             android:text="@string/recipe"
             android:textSize="18sp"
@@ -46,7 +45,9 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:clickable="true" />
+            android:clickable="true"
+            android:src="@mipmap/ic_hexagram"
+            app:backgroundTint="@color/SHILcolor" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -57,7 +58,7 @@
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/numSHIL"
+            android:id="@+id/filledSHIL"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0.7"
@@ -97,7 +98,8 @@
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:clickable="true"
-            app:backgroundTint="@android:color/holo_green_light"
+            android:src="@mipmap/ic_hexagram"
+            app:backgroundTint="@color/DOLRcolor"
             app:srcCompat="@android:color/transparent" />
 
         <TextView
@@ -109,7 +111,7 @@
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/numDOLR"
+            android:id="@+id/filledDOLR"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0.7"
@@ -148,7 +150,8 @@
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:clickable="true"
-            app:backgroundTint="@android:color/holo_orange_light"
+            android:src="@mipmap/ic_hexagram"
+            app:backgroundTint="@color/QUIDcolor"
             app:srcCompat="@android:color/transparent" />
 
         <TextView
@@ -160,7 +163,7 @@
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/numQUID"
+            android:id="@+id/filledQUID"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0.7"
@@ -199,7 +202,8 @@
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:clickable="true"
-            app:backgroundTint="@android:color/holo_red_light"
+            android:src="@mipmap/ic_hexagram"
+            app:backgroundTint="@color/PENYcolor"
             app:srcCompat="@android:color/transparent" />
 
         <TextView
@@ -211,7 +215,7 @@
             android:textSize="18sp" />
 
         <TextView
-            android:id="@+id/numPENY"
+            android:id="@+id/filledPENY"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0.7"
@@ -236,6 +240,60 @@
             android:text="@string/zero"
             android:textSize="18sp" />
 
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="8dp">
+
+        <android.support.design.widget.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:clickable="false"
+            app:backgroundTint="@android:color/transparent"
+            app:srcCompat="@android:color/transparent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:text="@string/purity_"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/purityView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1.2"
+            android:gravity="center"
+            android:text="@string/_100"
+            android:textSize="18sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:text="@string/percent"
+            android:textSize="18sp" />
+
+
+    </TableRow>
+
+    <TableRow
+        android:gravity="center"
+        android:padding="8dp">
+
+        <Button
+            android:id="@+id/refineBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="@string/refine" />
     </TableRow>
 
 

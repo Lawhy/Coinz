@@ -1,7 +1,9 @@
 package com.lawhy.coinz
 
+import java.io.Serializable
 
-class Wallet(val coins: ArrayList<Coin>, val foreignCoins: ArrayList<Coin>) {
+
+class Wallet(val coins: ArrayList<Coin>, val foreignCoins: ArrayList<Coin>) : Serializable {
 
     /** Uses the Wallet instance to manage coins data collectively.
      * */
@@ -12,6 +14,10 @@ class Wallet(val coins: ArrayList<Coin>, val foreignCoins: ArrayList<Coin>) {
 
     fun addForeign(foreignCoin: Coin) {
         this.foreignCoins.add(foreignCoin)
+    }
+
+    override fun toString(): String {
+        return "Wallet{ Coins: ${coins.size}, Foreign Coins: ${foreignCoins.size} }"
     }
 
 }

@@ -3,8 +3,9 @@ package com.lawhy.coinz
 import android.location.Location
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.annotations.Marker
+import java.io.Serializable
 
-class Coin(val id: String, val currency: String, val value: Double, mapMarker: Marker?) {
+class Coin(val id: String, val currency: String, val value: Double, mapMarker: Marker?) : Serializable {
 
     /** A very important class that preserves coins' information,
      *    1. id
@@ -21,6 +22,10 @@ class Coin(val id: String, val currency: String, val value: Double, mapMarker: M
     fun distToLocation(location: Location): Double {
         val curLatLng = LatLng(location.latitude, location.longitude)
         return curLatLng.distanceTo(this.marker?.position)
+    }
+
+    override fun toString(): String {
+        return "A ${this.currency} of value %.3f".format(this.value)
     }
 
 }

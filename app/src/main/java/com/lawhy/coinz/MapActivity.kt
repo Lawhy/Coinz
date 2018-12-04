@@ -566,20 +566,25 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         collectButton.setOnClickListener {
 
             // Ensure if there is a coin to collect
-            val lastLocation = locationEngine?.lastLocation!!
-            val nearestCoin = checkNearestCoin(lastLocation)
-            if (nearestCoin == null) {
-                Toast.makeText(this, "No coin nearby, try to be closer!", Toast.LENGTH_SHORT).show()
+            val lastLocation = locationEngine?.lastLocation
+            if (lastLocation == null) {
+                Log.wtf(tag, "No Location At All.")
+                Toast.makeText(this, "Please set the location for the emulator...", Toast.LENGTH_SHORT).show()
             } else {
-                // collect coins
-                val alertDialog = AlertDialog.Builder(this)
-                alertDialog.setTitle("Found a new coin!")
-                alertDialog.setMessage("Do you want to collect this coin?")
-                alertDialog.setPositiveButton("YES") { _, _ ->
-                    collectNearestCoin(nearestCoin)
+                val nearestCoin = checkNearestCoin(lastLocation)
+                if (nearestCoin == null) {
+                    Toast.makeText(this, "No coin nearby, try to be closer!", Toast.LENGTH_SHORT).show()
+                } else {
+                    // collect coins
+                    val alertDialog = AlertDialog.Builder(this)
+                    alertDialog.setTitle("Found a new coin!")
+                    alertDialog.setMessage("Do you want to collect this coin?")
+                    alertDialog.setPositiveButton("YES") { _, _ ->
+                        collectNearestCoin(nearestCoin)
+                    }
+                    alertDialog.setNegativeButton("NO") { _, _ -> }
+                    alertDialog.show()
                 }
-                alertDialog.setNegativeButton("NO") { _, _ -> }
-                alertDialog.show()
             }
         }
 
@@ -630,9 +635,18 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
             startActivity(Intent(this, SocialActivity::class.java))
         }
         fabAlchemy.setOnClickListener {
-            Log.i(tag, "onClick: fab -> Invitation")
+            Log.i(tag, "onClick: fab -> Alchemy")
             closeMenu()
-            startActivity(Intent(this, AlchemyActivity::class.java))
+            val intent = Intent(this, AlchemyActivity::class.java)
+            var highestXRate = 0.0  // This is one key component of Alchemy play mode
+            for (rate in exchangeRates.values) {
+                val rateValue = rate.toString().toDouble()
+                if (rateValue > highestXRate) {
+                    highestXRate = rateValue
+                }
+            }
+            intent.putExtra("highestXRate", highestXRate)
+            startActivity(intent)
         }
         fabAddFriend.setOnClickListener {
             Log.i(tag, "onClick: fab -> addFriend")

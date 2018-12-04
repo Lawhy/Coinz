@@ -570,6 +570,7 @@ class MyAccountActivity : AppCompatActivity() {
                         val textName = TextView(this)
                         textName.layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, TableRow.LayoutParams.WRAP_CONTENT, 2f)
                         textName.textSize = 18f
+                        textName.setPadding(8,0,0,8)
                         textName.gravity = Gravity.CENTER
                         textName.text = em.toString()
                         textName.isClickable = true
