@@ -646,7 +646,7 @@ class MyAccountActivity : AppCompatActivity() {
     private fun bankCoin(coinToBank: Coin): Double {
 
         // Bank only happens before exceeding the limit of 25 coins
-        if (bankedNum <= bankLIMIT) {
+        if (bankedNum < bankLIMIT) {
             val xr = exchangeRates[coinToBank.currency].toString().toDouble()
             val value = coinToBank.value
             wallet.coins.remove(coinToBank)

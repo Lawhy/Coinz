@@ -97,7 +97,8 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
     private var simpleIndex = 0 // simple index for coins in the wallet
     // usage: keep coins with the same coinID
     private val interpolator = OvershootInterpolator()
-    private var mapToday: String = ""
+
+    private var mapToday: String = "" // The map to be rendered
 
     /* A very important Boolean that has been passed through DownloadActivity, DataActivity
      * and now arrives MapActivity. It indicates if it is the first time to launch the app today,
@@ -515,7 +516,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
         }
 
         // Check null value for brand new account.
-        if (lastDownloadDate == "null") {
+        if (lastDownloadDate == "null" || lastDownloadDate == "") {
             Log.d(tag, "Brand new account.")
             firstTimeLaunch = false // set this boolean to false to prevent overlapped renewal
             return
