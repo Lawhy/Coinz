@@ -238,7 +238,7 @@ class RequestActivity : AppCompatActivity() {
                 val em = emails[i]
                 val alertDialog = AlertDialog.Builder(this)
                 alertDialog.setTitle("Are you sure?")
-                alertDialog.setMessage("Receive $em as a friend.")
+                alertDialog.setMessage("Accept $em as a friend.")
                 alertDialog.setPositiveButton("YES") { _, _ ->
 
                     // Friend bridge user -> request sender
