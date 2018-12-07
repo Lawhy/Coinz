@@ -93,7 +93,7 @@
     <string name="about_the_alchemy_recipe">About the Alchemy Recipe</string>
     <string name="_1">1.</string>
     <string name="ratio_">Ratio:</string>
-    <string name="ratio_description">A recipe would specify a combination of coins of the four types, e.g. SHIL: DOLR: QUID: PENNY = 5: 3: 2: 4.</string>
+    <string name="ratio_description">A recipe would specify a combination of coins of the four types, e.g. SHIL: DOLR: QUID: PENY = 5: 3: 2: 4.</string>
     <string name="purity">Purity</string>
     <string name="purity_description">The average values of the coins affects the purity of the combination, and purity directly affects the success rate.</string>
     <string name="reward">Reward</string>
