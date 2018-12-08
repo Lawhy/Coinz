@@ -102,7 +102,7 @@
     <string name="danger_description">Alchemical refinement is dangerous, you may lose everything you throw into the crucible or become much richer.</string>
     <string name="reward_description">For a successful refinement, all the input coins would take the maximum value 10, and directly transformed to Gold with a high exchange rate. That is the reward.</string>
     <string name="hint">Hint</string>
-    <string name="hint_description">Notice that refining high-value coins would be more reliable but less rewarding, and vice versa.</string>
+    <string name="hint_description">Notice that refining high-value coins would be more reliable but less rewarding.</string>
     <string name="background_story">The Grandmaster Alchemist Mr.DarkBrew decides to share his lifetime study by providing his Alchemical recipes to you. \n With a small amount of Gold payment, you can purchase the recipe (with different level) and use the crucible to refine your coins, turning them into Gold whenever the requirement on the recipe is satisfied…</string>
     <string name="payment">Payment</string>
     <string name="payment_description">The payment (300, 500, 1000) varies with possible reward of the recipe (i.e. higher payment is more likely to give rewarding recipe).</string>
