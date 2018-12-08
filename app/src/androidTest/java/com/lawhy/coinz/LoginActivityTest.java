@@ -10,14 +10,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.schibsted.spain.barista.interaction.PermissionGranter;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+
+import java.util.HashMap;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
@@ -42,6 +47,20 @@ public class LoginActivityTest {
 
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
+
+    @Before
+    public void resetTestAccount() {
+
+        // Reset everything for the test account to have enough gold, coins and friends.
+        FirebaseFirestore firestoreTest = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder().setTimestampsInSnapshotsEnabled(true).build();
+        firestoreTest.setFirestoreSettings(settings);
+
+        // Set an empty download date
+        firestoreTest.collection("pool").document("downloadDate").update("dsQjFqnoj8bxbUNY7W1TppvLCz93", "");
+        // Set an empty map
+        firestoreTest.collection("maps").document("empty@test.com").set(new HashMap<>());
+    }
 
 
     @Test
