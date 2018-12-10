@@ -425,7 +425,7 @@ class RecipeActivity : AppCompatActivity() {
             // Increase the gold number by the reward
             goldDocRef?.get()?.addOnSuccessListener {
                 val goldData = it.data
-                if (goldData.isNullOrEmpty()) {
+                if (goldData == null || goldData.isEmpty()) {
                     val map = HashMap<String, Any>()
                     map["bankedNumber"] = 0
                     map["goldNumber"] = reward

@@ -93,7 +93,7 @@ class DownloadActivity : AppCompatActivity(), DownloadCompleteListener {
                 ?.document("downloadDate")?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if (data.isNullOrEmpty()) {
+                    if (data == null || data.isEmpty()) {
                         Log.d(tag, "No downloadDate data.")
                         firestore?.collection("pool")
                                 ?.document("downloadDate")

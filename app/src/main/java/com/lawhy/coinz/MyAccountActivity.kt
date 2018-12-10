@@ -177,7 +177,7 @@ class MyAccountActivity : AppCompatActivity() {
         goldDocRef?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if (data.isNullOrEmpty()) {
+                    if (data == null || data.isEmpty()) {
                         Log.i(tag, "No gold/bank number information.")
                         val originalMap = HashMap<String, Any>()
                         originalMap["goldNumber"] = 0.000
@@ -220,7 +220,7 @@ class MyAccountActivity : AppCompatActivity() {
         goldDocRef?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if (data.isNullOrEmpty()) {
+                    if (data == null || data.isEmpty()) {
                         Log.i(tag, "No Gold Info in the bank account.")
                         val originalMap = HashMap<String, Any>()
                         originalMap["goldNumber"] = 0.000
@@ -260,7 +260,7 @@ class MyAccountActivity : AppCompatActivity() {
         coinsDocRef?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if (data.isNullOrEmpty()) {
+                    if (data == null || data.isEmpty()) {
                         Log.i(tag, "No coins in the wallet.")
                     } else {
                         for (coinMap in data) {
@@ -278,7 +278,7 @@ class MyAccountActivity : AppCompatActivity() {
                         // Fill foreign coins into the wallet as well
                         foreignCoinsDocRef?.get()?.addOnSuccessListener { f ->
                             val foreignData = f.data
-                            if (foreignData.isNullOrEmpty()) {
+                            if (foreignData == null || foreignData.isEmpty()) {
                                 Log.i(tag, "No foreign coins in the wallet.")
                             } else {
                                 for (foreignCoinMap in foreignData) {
@@ -557,7 +557,7 @@ class MyAccountActivity : AppCompatActivity() {
             var choiceToSend = "" // For one send request, only one choice of email.
             friendDocRef?.get()?.addOnSuccessListener { snapShotFriend ->
                 val friends = snapShotFriend.data?.values
-                if (friends.isNullOrEmpty()) {
+                if (friends == null || friends.isEmpty()) {
                     Log.d(tag, "No friend at all.")
                 } else {
                     Log.d(tag, "Retrieve the friend list.")
@@ -626,7 +626,7 @@ class MyAccountActivity : AppCompatActivity() {
         foreignCoinsDocRef?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if (data.isNullOrEmpty()) {
+                    if (data == null || data.isEmpty()) {
                         foreignCoinsDocRef.set(mapOf("0" to coinMap)) // Initialise if null or empty
                     } else {
                         val new = data.size.toString()

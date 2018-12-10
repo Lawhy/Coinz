@@ -79,7 +79,7 @@ class SocialActivity : AppCompatActivity() {
         // The ranking document is aimed to store *temporary data maps* so as to speed up displaying the ranking list.
         rankDocRef?.get()?.addOnSuccessListener {
             val rankingData = it.data
-            if (rankingData.isNullOrEmpty()) {
+            if (rankingData == null || rankingData.isEmpty()) {
                 Log.d(tag, "First Time loading ranking list or it is empty.")
                 setDataMaps() // First time displaying ranking list is slow.
             } else {
@@ -137,7 +137,7 @@ class SocialActivity : AppCompatActivity() {
                 registeredNamesDoc?.get()
                         ?.addOnSuccessListener { snapshot ->
                             val data = snapshot.data
-                            if (data.isNullOrEmpty()) {
+                            if (data == null || data.isEmpty()) {
                                 Log.i(tag, "No names in the data pool yet.")
                                 registeredNamesDoc.set(mapOf())
                             } else {
@@ -173,7 +173,7 @@ class SocialActivity : AppCompatActivity() {
                 ?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if (data.isNullOrEmpty()) {
+                    if (data == null || data.isEmpty()) {
                         Log.i(tag, "No name in the pool.")
                         userNickNameView.text = userEmail // Default name is the email
                     } else {
@@ -249,7 +249,7 @@ class SocialActivity : AppCompatActivity() {
 
         friendDocRef?.get()?.addOnSuccessListener {
             val friends = it.data?.values?.toList()
-            if (friends.isNullOrEmpty()) {
+            if (friends == null || friends.isEmpty()) {
                 Log.i(tag, "No friend at all.")
                 val me = ArrayList<String>()
                 me.add(userEmail)
@@ -278,7 +278,7 @@ class SocialActivity : AppCompatActivity() {
                 ?.get()
                 ?.addOnSuccessListener { n ->
                     val nickname = n.data
-                    if (nickname.isNullOrEmpty()) {
+                    if (nickname == null || nickname.isEmpty()) {
                         Log.i(tag, "No name at all.")
                         nameMap[email] = email
                     } else {
@@ -300,7 +300,7 @@ class SocialActivity : AppCompatActivity() {
                 ?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if (data.isNullOrEmpty()) {
+                    if (data == null || data.isEmpty()) {
                         Log.i(tag, "No Gold info at all.")
                         goldMap[email] = 0.000
                     } else {

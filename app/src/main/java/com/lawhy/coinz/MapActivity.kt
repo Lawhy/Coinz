@@ -556,7 +556,7 @@ class MapActivity : AppCompatActivity(), PermissionsListener, LocationEngineList
                 ?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if (data.isNullOrEmpty()) {
+                    if (data == null || data.isEmpty()) {
                         simpleIndex = 0
                         coinsDocRef.set(mapOf())
                     } else {

@@ -100,7 +100,7 @@ class DataActivity : AppCompatActivity() {
                     ?.document(userEmail)?.get()
                     ?.addOnSuccessListener { snapshot ->
                         val data = snapshot.data
-                        if (data.isNullOrEmpty()) {
+                        if (data == null || data.isEmpty()) {
                             Log.d(tag, "No map stored! Check database!")
                             // Serious Error will happen if downloadDate has been updated whereas Map is not presented
                             // In this case, remove the downloadDate and let user try again

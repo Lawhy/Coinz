@@ -96,7 +96,7 @@ class RequestActivity : AppCompatActivity() {
             // Check if the email exists in database
             emailDocRef?.get()?.addOnSuccessListener { snapShotEmails ->
                 val data = snapShotEmails.data
-                if (data.isNullOrEmpty()) {
+                if (data == null || data.isEmpty()) {
                     Log.wtf(tag, "No email reference in database!")
                 } else {
                     for (id in data.keys) {
@@ -122,7 +122,7 @@ class RequestActivity : AppCompatActivity() {
         friendDocRef?.get()?.addOnSuccessListener {
             var notFriend = true
             val friendList = it.data
-            if (friendList.isNullOrEmpty()) {
+            if (friendList == null || friendList.isEmpty()) {
                 friendDocRef?.set(mapOf())
             } else {
                 for (em in friendList.values) {
@@ -151,7 +151,7 @@ class RequestActivity : AppCompatActivity() {
         val friendRequestDoc = firestore?.collection("requests")?.document(requestedEmail)
         friendRequestDoc?.get()?.addOnSuccessListener {
             val requests = it.data
-            if (requests.isNullOrEmpty()) {
+            if (requests == null || requests.isEmpty()) {
                 Log.d(tag, "Requests storage has not been established.")
                 friendRequestDoc.set(mapOf("0" to userEmail)).addOnSuccessListener {
                     Log.d(tag, "First request in store.")
@@ -177,7 +177,7 @@ class RequestActivity : AppCompatActivity() {
 
         requestDocRef?.get()?.addOnSuccessListener {
             val reqData = it.data
-            if (reqData.isNullOrEmpty()) {
+            if (reqData == null || reqData.isEmpty()) {
                 Log.d(tag, "Friend requests have not been established in database.")
                 requestDocRef?.set(mapOf())?.addOnSuccessListener { Log.d(tag, "Friend requests established in database.") }
             } else {
@@ -244,7 +244,7 @@ class RequestActivity : AppCompatActivity() {
                     // Friend bridge user -> request sender
                     friendDocRef?.get()?.addOnSuccessListener { snap ->
                         val friendList = snap.data
-                        if (friendList.isNullOrEmpty()) {
+                        if (friendList == null || friendList.isEmpty()) {
                             friendDocRef?.set(mapOf("0" to em))
                                     ?.addOnSuccessListener { Log.i(tag, "$userEmail adds $em into friend list.") }
                                     ?.addOnFailureListener { e -> Log.wtf(tag, e.message) }
@@ -261,7 +261,7 @@ class RequestActivity : AppCompatActivity() {
                     val friendReqDocRef = firestore?.collection("friends")?.document(em)
                     friendReqDocRef?.get()?.addOnSuccessListener { snapReq ->
                         val friendListFromRequest = snapReq.data
-                        if (friendListFromRequest.isNullOrEmpty()) {
+                        if (friendListFromRequest == null || friendListFromRequest.isEmpty()) {
                             friendReqDocRef.set(mapOf("0" to userEmail))
                         } else {
                             val new1 = friendListFromRequest.size.toString()

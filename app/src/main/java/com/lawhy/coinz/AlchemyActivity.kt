@@ -114,7 +114,7 @@ class AlchemyActivity : AppCompatActivity() {
         coinsDocRef?.get()
                 ?.addOnSuccessListener {
                     val data = it.data
-                    if (data.isNullOrEmpty()) {
+                    if (data == null || data.isEmpty()) {
                         Log.i(tag, "No coins in the wallet.")
                     } else {
                         for (coinMap in data) {
@@ -132,7 +132,7 @@ class AlchemyActivity : AppCompatActivity() {
                         // Fill foreign coins into the wallet as well
                         foreignCoinsDocRef?.get()?.addOnSuccessListener { f ->
                             val foreignData = f.data
-                            if (foreignData.isNullOrEmpty()) {
+                            if (foreignData == null || foreignData.isEmpty()) {
                                 Log.i(tag, "No foreign coins in the wallet.")
                             } else {
                                 for (foreignCoinMap in foreignData) {
@@ -184,7 +184,7 @@ class AlchemyActivity : AppCompatActivity() {
             // Before going to see the recipe, we need to ensure there is one, otherwise providing choices to purchase a new one
             recipeDocRef?.get()?.addOnSuccessListener { recipeSnap ->
                 val recipe = recipeSnap.data
-                if (recipe.isNullOrEmpty()) {
+                if (recipe == null || recipe.isEmpty()) {
                     recipeDocRef?.set(mapOf())
                     recipePurchasing()
                 } else {
@@ -250,7 +250,7 @@ class AlchemyActivity : AppCompatActivity() {
             goldDocRef?.get()?.addOnSuccessListener { g ->
                 val goldData = g.data
                 var enoughGold = false
-                if (goldData.isNullOrEmpty()) {
+                if (goldData == null || goldData.isEmpty()) {
                     Log.d(tag, "Gold account has not been established.")
                 } else {
                     val goldInAccount = goldData["goldNumber"].toString().toDouble()

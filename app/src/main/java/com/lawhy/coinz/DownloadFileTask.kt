@@ -37,7 +37,7 @@ class DownloadFileTask(private val caller: DownloadCompleteListener,
 
     // Given a string representation of a URL, sets up a connection and gets an input stream
     @Throws(IOException::class)
-    fun downloadUrl(urlString: String): InputStream {
+    private fun downloadUrl(urlString: String): InputStream {
         val url = URL(urlString)
         val conn = url.openConnection() as HttpURLConnection
 

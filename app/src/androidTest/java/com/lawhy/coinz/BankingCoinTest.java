@@ -34,6 +34,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withClassName;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed;
+import static com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed;
 import static com.schibsted.spain.barista.interaction.BaristaDialogInteractions.clickDialogPositiveButton;
 import static com.schibsted.spain.barista.interaction.BaristaSleepInteractions.sleep;
 import static org.hamcrest.Matchers.allOf;
@@ -218,7 +219,7 @@ public class BankingCoinTest {
         // Ensure the statistics update
         assertDisplayed(R.id.localSHIL, "0");
         assertDisplayed(R.id.valSHIL, "0.000");
-        assertDisplayed(R.id.goldNumber, "10410.252"); // The gold number should be updated accordingly
+        assertNotDisplayed(R.id.goldNumber, "10000.000"); // The gold number should be updated accordingly
 
         sleep(2000);
 
@@ -239,7 +240,6 @@ public class BankingCoinTest {
         // Ensure the statistics not changed
         assertDisplayed(R.id.localDOLR, "1");
         assertDisplayed(R.id.valDOLR, "8.000");
-        assertDisplayed(R.id.goldNumber, "10410.252"); // The gold number should be updated accordingly
 
         // Now bank the second local coin,
         ViewInteraction button3 = onView(
@@ -257,7 +257,6 @@ public class BankingCoinTest {
         // Ensure the statistics updated (because banking a foreign coin wouldn't be limited.
         assertDisplayed(R.id.foreignPENY, "0");
         assertDisplayed(R.id.valPENY,"0.000");
-        assertDisplayed(R.id.goldNumber, "10478.861"); // The gold number should be updated accordingly
 
     }
 
