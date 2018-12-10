@@ -88,6 +88,14 @@ class DataActivity : AppCompatActivity() {
                                 Toast.LENGTH_SHORT).show()
                     }
 
+            // Renew the banked number today
+            firestore?.collection("gold")
+                    ?.document(userEmail)
+                    ?.update(mapOf("bankedNumber" to 0))
+                    ?.addOnSuccessListener {
+                        Log.d(tag, "The banked number has been refreshed.")
+                    }
+
             // Go to MapActivity with the wanted jsonString
             intent.putExtra("mapToday", mapToday)
             finish()
